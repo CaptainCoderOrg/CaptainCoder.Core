@@ -13,10 +13,6 @@ public static class DictionaryExtensions
         {
             if (!dict1.TryGetValue(key, out V other)) { return false; }
             if (value == null && other == null) { continue; }
-            // 3 options at this point,
-            // value is null => false
-            // other is null => value.Equals(null)
-            // value and other are not null => value.Equals(other)
             if (value == null || !value.Equals(other)) { return false; }
         }
         return true;

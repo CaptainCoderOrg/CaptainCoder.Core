@@ -7,6 +7,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CaptainCoder", "CaptainCode
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CaptainCoder.Core", "CaptainCoder\Core\CaptainCoder.Core.csproj", "{A8F67E37-6ADA-4E3B-A04A-0FFBD71C9B1F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CaptainCoder.CraftingSystem", "CaptainCoder\CraftingSystem\CaptainCoder.CraftingSystem.csproj", "{26DF4E8F-0F80-4631-B5D7-0225FA95A872}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{84C658BF-22D2-4204-A6DA-25B121AE1011}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CaptainCoder", "CaptainCoder", "{D23EC706-D1C9-482F-ADD5-A92AA5D87FAB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CaptainCoder.CraftingSystem.Tests", "Tests\CaptainCoder\CraftingSystem\CaptainCoder.CraftingSystem.Tests.csproj", "{D76D474C-088B-4989-880E-2A26A9CA9346}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,8 +28,19 @@ Global
 		{A8F67E37-6ADA-4E3B-A04A-0FFBD71C9B1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A8F67E37-6ADA-4E3B-A04A-0FFBD71C9B1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A8F67E37-6ADA-4E3B-A04A-0FFBD71C9B1F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26DF4E8F-0F80-4631-B5D7-0225FA95A872}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26DF4E8F-0F80-4631-B5D7-0225FA95A872}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26DF4E8F-0F80-4631-B5D7-0225FA95A872}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26DF4E8F-0F80-4631-B5D7-0225FA95A872}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D76D474C-088B-4989-880E-2A26A9CA9346}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D76D474C-088B-4989-880E-2A26A9CA9346}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D76D474C-088B-4989-880E-2A26A9CA9346}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D76D474C-088B-4989-880E-2A26A9CA9346}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{A8F67E37-6ADA-4E3B-A04A-0FFBD71C9B1F} = {A9E5806D-9EE3-47F7-9711-677D32F87798}
+		{26DF4E8F-0F80-4631-B5D7-0225FA95A872} = {A9E5806D-9EE3-47F7-9711-677D32F87798}
+		{D23EC706-D1C9-482F-ADD5-A92AA5D87FAB} = {84C658BF-22D2-4204-A6DA-25B121AE1011}
+		{D76D474C-088B-4989-880E-2A26A9CA9346} = {D23EC706-D1C9-482F-ADD5-A92AA5D87FAB}
 	EndGlobalSection
 EndGlobal

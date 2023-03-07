@@ -9,5 +9,5 @@ public interface IInventoryItem
     /// <summary>
     /// The amount of space this <see cref="IInventoryItem"/> occupies.
     /// </summary>
-    public Size Size => new (1, 1);
+    public Dimensions Size => new (1, 1);
 }

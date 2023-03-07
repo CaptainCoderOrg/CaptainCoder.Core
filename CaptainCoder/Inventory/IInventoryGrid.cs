@@ -8,9 +8,9 @@ namespace CaptainCoder.Inventory;
 public interface IInventoryGrid
 {
     /// <summary>
-    /// The <see cref="Size"/> of this <see cref="IInventoryGrid"/>
+    /// The <see cref="Dimensions"/> of this <see cref="IInventoryGrid"/>
     /// </summary>
-    public Size GridSize => new (4,10);
+    public Dimensions GridSize => new (4,10);
 
     /// <summary>
     /// A enumerable containing one entry for every <see cref="IInventoryItem"/> in this
@@ -45,10 +45,12 @@ public interface IInventoryGrid
     /// Attempts to add the specified <paramref name="item"/> to this inventory
     /// by placing its top left corner in the specified <see cref="Position"/>.
     /// Returns true if the <paramref name="item"/> was added successfully and
-    /// false otherwise. The <paramref name="removed"/> will be set to any item
-    /// that was removed from the inventory by adding the specified item.
+    /// false otherwise. For convenience, on success if exactly one item
+    /// occupied the area that <paramref name="item"/> now occupies, the
+    /// <paramref name="removedItem"/> is set to that item. If no such item
+    /// existed, the value will be null.
     /// </summary>
-    public bool TrySetItemAt(Position topLeft, IInventoryItem toAdd, out IInventoryItem? removed);
+    public bool TrySetItemAt(Position topLeft, IInventoryItem item, out IInventoryItem? removedItem);
 
     /// <summary>
     /// Attempts to remove an item at the specified position. Returns true if an

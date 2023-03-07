@@ -20,7 +20,7 @@ public class RecipeDatabase<T>
     /// </summary>
     public bool TryGetRecipe(IEnumerable<T> ingredients, ICraftingCategory category, out IShapelessRecipe<T>? recipe)
     {
-        RecipeEntry key = new RecipeEntry(ingredients, category);
+        RecipeEntry key = new(ingredients, category);
         return _database.TryGetValue(key, out recipe);
     }
 

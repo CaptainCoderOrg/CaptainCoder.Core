@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 namespace CaptainCoder.Core;
+
+/// <summary></summary>
 public static class PositionExtensions
 {
     /// <summary>

@@ -8,7 +8,12 @@ namespace CaptainCoder.Core;
 [Serializable]
 public struct MutablePosition
 {
+    /// <summary></summary>
     public int Row;
+    /// <summary></summary>
     public int Col;
+    /// <summary>
+    /// Freezes this struct into an immutable <see cref="Position"/>
+    /// </summary>
     public Position Freeze() => new (Row, Col);
 }

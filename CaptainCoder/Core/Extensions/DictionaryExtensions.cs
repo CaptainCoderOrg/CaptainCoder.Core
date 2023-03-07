@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 namespace CaptainCoder.Core;
 
+/// <summary></summary>
 public static class DictionaryExtensions
 {
     /// <summary>

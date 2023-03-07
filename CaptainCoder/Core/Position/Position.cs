@@ -9,6 +9,14 @@ namespace CaptainCoder.Core;
 [Serializable]
 public readonly record struct Position(int Row, int Col)
 {
+    /// <summary>
+    /// Allows (int, int) tuples to be used anywhere a Position can be used. Be careful not to 
+    /// do this when using a position as a key in a HashSet or Dictionary.
+    /// </summary>
     public static implicit operator Position((int row, int col) pair) => new (pair.row, pair.col);
+
+    /// <summary>
+    /// Allows MutablePosition to be used anywhere a Position could be used.
+    /// </summary>
     public static implicit operator Position(MutablePosition mutablePosition) => mutablePosition.Freeze();
 }

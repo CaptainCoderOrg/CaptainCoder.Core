@@ -1,9 +1,7 @@
 namespace CaptainCoder.Inventory;
 
-using System.Collections;
-using CaptainCoder.Core;
 /// <summary>
-/// The <see cref="Dimensions"/> struct defines a discrete rectangular
+/// The readonly <see cref="Dimensions"/> struct defines a discrete rectangular
 /// shape using rows and columns.
 /// </summary>
 public readonly record struct Dimensions : IEnumerable<Position>
@@ -36,7 +34,7 @@ public readonly record struct Dimensions : IEnumerable<Position>
             {
                 for (int c = 0; c < Columns; c++)
                 {
-                    yield return (r, c);
+                    yield return new Position(r, c);
                 }
             }
         }

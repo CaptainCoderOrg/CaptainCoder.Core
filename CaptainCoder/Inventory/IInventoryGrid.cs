@@ -1,5 +1,3 @@
-using CaptainCoder.Core;
-using System.Collections.Generic;
 namespace CaptainCoder.Inventory;
 
 /// <summary>
@@ -21,7 +19,7 @@ public interface IInventoryGrid
     /// <summary>
     /// Attempts to retrieve an item at the specified position. If an item
     /// exists in that position, returns true and populates <paramref
-    /// name="item"/> otherwise returns false and the value of <parameref
+    /// name="item"/> otherwise returns false and the value of <paramref
     /// name="item"/> is undefined.
     /// </summary>
     public bool TryGetItemAt(Position position, out IInventoryItem item);
@@ -63,6 +61,5 @@ public interface IInventoryGrid
     /// A <see cref="GridSlot"/> represents where the top left corner
     /// of an <see cref="IInventoryItem"/> is within a <see cref="IInventoryGrid"/>
     /// </summary>
-    /// <returns></returns>
     public record GridSlot(Position TopLeft, IInventoryItem Item, IInventoryGrid Grid);
 }

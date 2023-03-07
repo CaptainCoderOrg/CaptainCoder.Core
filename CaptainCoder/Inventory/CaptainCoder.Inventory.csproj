@@ -5,6 +5,7 @@
   </ItemGroup>
 
   <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <RootNamespace>CaptainCoder.Inventory</RootNamespace>
     <TargetFramework>netstandard2.1</TargetFramework>
     <LangVersion>11</LangVersion>

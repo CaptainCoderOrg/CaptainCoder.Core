@@ -4,6 +4,7 @@ namespace CaptainCoder.Inventory;
 /// The readonly <see cref="Dimensions"/> struct defines a discrete rectangular
 /// shape using rows and columns.
 /// </summary>
+[Serializable]
 public readonly record struct Dimensions : IEnumerable<Position>
 {
     private readonly int _rows = 1;

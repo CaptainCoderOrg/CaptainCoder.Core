@@ -2,7 +2,7 @@
 
 /// <summary>
 /// The <see cref="IInventoryItem"/> interface specifies an item that can be
-/// placed within an <see cref="IInventoryGrid"/>. 
+/// placed within an <see cref="IInventoryGrid{T}"/>. 
 /// </summary>
 public interface IInventoryItem
 {

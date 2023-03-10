@@ -1,3 +1,4 @@
+using CaptainCoder.Core.Collections;
 public class CraftingContainer<T> : ICraftingContainer<T>
 {
     private readonly Dictionary<Position, T> _grid;
@@ -21,8 +22,8 @@ public class CraftingContainer<T> : ICraftingContainer<T>
     public string Name { get; }
     public int Rows { get; }
     public int Columns { get; }
-    public HashSet<ICraftingCategory> Categories => _categories.ToHashSet();
-    public HashSet<Position> InvalidPositions => _invalidPositions.ToHashSet();
+    public ReadOnlySet<ICraftingCategory> Categories => _categories.AsReadOnly();
+    public ReadOnlySet<Position> InvalidPositions => _invalidPositions.AsReadOnly();
     public IEnumerable<(Position, T)> Positions
     {
         get

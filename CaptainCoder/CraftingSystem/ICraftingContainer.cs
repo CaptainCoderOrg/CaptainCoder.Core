@@ -1,10 +1,11 @@
+using CaptainCoder.Core.Collections;
 public interface ICraftingContainer<T>
 {
     public string Name { get; }
     public int Rows { get; }
     public int Columns { get; }
-    public HashSet<ICraftingCategory> Categories { get; }
-    public HashSet<Position> InvalidPositions { get; }
+    public ReadOnlySet<ICraftingCategory> Categories { get; }
+    public ReadOnlySet<Position> InvalidPositions { get; }
     public IEnumerable<(Position, T)> Positions { get; }
 
     /// <summary>
@@ -26,8 +27,8 @@ public interface ICraftingContainer<T>
         string ICraftingContainer<T>.Name => CraftingContainer.Name;
         int ICraftingContainer<T>.Rows => CraftingContainer.Rows;
         int ICraftingContainer<T>.Columns => CraftingContainer.Columns;
-        HashSet<ICraftingCategory> ICraftingContainer<T>.Categories => CraftingContainer.Categories;
-        HashSet<Position> ICraftingContainer<T>.InvalidPositions => CraftingContainer.InvalidPositions;
+        ReadOnlySet<ICraftingCategory> ICraftingContainer<T>.Categories => CraftingContainer.Categories;
+        ReadOnlySet<Position> ICraftingContainer<T>.InvalidPositions => CraftingContainer.InvalidPositions;
         IEnumerable<(Position, T)> ICraftingContainer<T>.Positions => CraftingContainer.Positions;
         bool ICraftingContainer<T>.TryAddItem(Position position, T item) => CraftingContainer.TryAddItem(position, item);
         bool ICraftingContainer<T>.TryMove(Position from, Position to) => CraftingContainer.TryMove(from, to);

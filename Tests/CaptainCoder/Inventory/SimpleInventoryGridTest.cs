@@ -58,6 +58,16 @@ public class SimpleInventoryGridTest
     }
 
     [Fact]
+    public void TestAddOutOfBounds3x2()
+    {
+        SimpleInventoryGrid<MockInventoryItem> inventory = new() { GridSize = new Dimensions(4, 10) };
+        Assert.False(inventory.TrySetItemAt((-1, 0), s_Chest, out _));
+        Assert.False(inventory.TrySetItemAt((3, 9), s_Chest, out _));
+        Assert.False(inventory.TrySetItemAt((4, 0), s_Chest, out _));
+        Assert.False(inventory.TrySetItemAt((0, 10), s_Chest, out _));
+    }
+
+    [Fact]
     public void TestSimpleAddWithSwap()
     {
          SimpleInventoryGrid<MockInventoryItem> inventory = new() { GridSize = new Dimensions(4, 10) };

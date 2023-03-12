@@ -81,8 +81,8 @@ public class SimpleInventoryGrid<T> : IInventoryGrid<T> where T : class, IInvent
     /// <inheritdoc/>
     public bool TrySetItemAt(Position topLeft, T item)
     {
-        bool canSet = item.Size.Positions.Any(p => !IsInBounds(p + topLeft) || IsOccupied(p + topLeft));
-        if (canSet) { return false; }
+        bool outOfBoundsOrOccupied = item.Size.Positions.Any(p => !IsInBounds(p + topLeft) || IsOccupied(p + topLeft));
+        if (outOfBoundsOrOccupied) { return false; }
 
         _itemLookup[item] = topLeft;
         foreach (Position itemCell in item.Size)
@@ -99,6 +99,8 @@ public class SimpleInventoryGrid<T> : IInventoryGrid<T> where T : class, IInvent
         removedItem = null;
         // No items occupy this space
         if (TrySetItemAt(topLeft, item)) { return true; }
+        bool outOfBounds = item.Size.Positions.Any(p => !IsInBounds(p + topLeft));
+        if (outOfBounds) { return false; }
 
         // If more than one item occupies the space, return false
         if (!IntersectsWithOne(topLeft, item, out T itemToRemove)) { return false; }

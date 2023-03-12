@@ -68,26 +68,33 @@ public class SimpleInventoryGridTest
     }
 
     [Fact]
+    public void TestAddingChestInBackpack()
+    {
+        SimpleInventoryGrid<MockInventoryItem> inventory = new() { GridSize = new Dimensions(6, 2) };
+        Assert.True(inventory.TrySetItemAt((2, 0), s_Chest, out _));
+    }
+
+    [Fact]
     public void TestSimpleAddWithSwap()
     {
-         SimpleInventoryGrid<MockInventoryItem> inventory = new() { GridSize = new Dimensions(4, 10) };
-         Assert.True(inventory.TrySetItemAt((0,0), s_Dagger));
-         Assert.True(inventory.TrySetItemAt((0,0), s_Chest, out MockInventoryItem? removedItem));
-         Assert.Equal(s_Dagger, removedItem);
-         Assert.Single(inventory.Items);
-         var chestSlot = new IInventoryGrid<MockInventoryItem>.GridSlot((0,0), s_Chest, inventory);
-         Assert.Contains(chestSlot, inventory.Items);
-         Assert.True(inventory.TrySetItemAt((0,2), s_Dagger));
-         /* 
-            AAD.
-            AAD.
-            AA..
-            ....
-         */
-         Assert.False(inventory.TrySetItemAt((0,1), s_Shield, out _));
-         Assert.Equal(2, inventory.Items.Count());
-         var daggerSlot = new IInventoryGrid<MockInventoryItem>.GridSlot((0,2), s_Dagger, inventory);
-         Assert.Contains(chestSlot, inventory.Items);
-         Assert.Contains(daggerSlot, inventory.Items);
+        SimpleInventoryGrid<MockInventoryItem> inventory = new() { GridSize = new Dimensions(4, 10) };
+        Assert.True(inventory.TrySetItemAt((0, 0), s_Dagger));
+        Assert.True(inventory.TrySetItemAt((0, 0), s_Chest, out MockInventoryItem? removedItem));
+        Assert.Equal(s_Dagger, removedItem);
+        Assert.Single(inventory.Items);
+        var chestSlot = new IInventoryGrid<MockInventoryItem>.GridSlot((0, 0), s_Chest, inventory);
+        Assert.Contains(chestSlot, inventory.Items);
+        Assert.True(inventory.TrySetItemAt((0, 2), s_Dagger));
+        /* 
+           AAD.
+           AAD.
+           AA..
+           ....
+        */
+        Assert.False(inventory.TrySetItemAt((0, 1), s_Shield, out _));
+        Assert.Equal(2, inventory.Items.Count());
+        var daggerSlot = new IInventoryGrid<MockInventoryItem>.GridSlot((0, 2), s_Dagger, inventory);
+        Assert.Contains(chestSlot, inventory.Items);
+        Assert.Contains(daggerSlot, inventory.Items);
     }
 }

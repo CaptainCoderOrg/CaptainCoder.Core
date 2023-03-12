@@ -10,6 +10,7 @@ public class SimpleInventoryGrid<T> : IInventoryGrid<T> where T : class, IInvent
 
     private readonly Dictionary<T, Position> _itemLookup = new();
     private readonly T?[,] _grid;
+    private readonly Dimensions _gridSize = new(4, 10);
 
     /// <summary>
     /// Initializes an instance of <see cref="SimpleInventoryGrid{T}"/> with a
@@ -17,20 +18,19 @@ public class SimpleInventoryGrid<T> : IInventoryGrid<T> where T : class, IInvent
     /// </summary>
     public SimpleInventoryGrid()
     {
-        _grid = new T[GridSize.Rows, GridSize.Columns];
-    }
-
-    /// <summary>
-    /// Initializes an instance of <see cref="SimpleInventoryGrid{T}"/> with the
-    /// specified <paramref name="gridSize"/>
-    /// </summary>
-    public SimpleInventoryGrid(Dimensions gridSize) : this()
-    {
-        GridSize = gridSize;
+        _grid = new T[_gridSize.Rows, _gridSize.Columns];
     }
 
     /// <inheritdoc/>
-    public Dimensions GridSize { get; init; } = new(4, 10);
+    public Dimensions GridSize
+    {
+        get => _gridSize;
+        init
+        {
+            _gridSize = value;
+            _grid = new T[_gridSize.Rows, _gridSize.Columns];
+        }
+    }
 
     /// <inheritdoc/>
     public IEnumerable<IInventoryGrid<T>.GridSlot> Items
@@ -47,7 +47,7 @@ public class SimpleInventoryGrid<T> : IInventoryGrid<T> where T : class, IInvent
     /// <inheritdoc/>
     public bool IsOccupied(Position position) => _grid[position.Row, position.Col] != null;
 
-    private bool IsInBounds(Position position) => 
+    private bool IsInBounds(Position position) =>
             !(position.Row < 0 ||
               position.Col < 0 ||
               position.Row >= GridSize.Rows ||
@@ -81,7 +81,16 @@ public class SimpleInventoryGrid<T> : IInventoryGrid<T> where T : class, IInvent
     /// <inheritdoc/>
     public bool TrySetItemAt(Position topLeft, T item)
     {
-        bool outOfBoundsOrOccupied = item.Size.Positions.Any(p => !IsInBounds(p + topLeft) || IsOccupied(p + topLeft));
+        // bool outOfBoundsOrOccupied = item.Size.Positions.Any(p => !IsInBounds(p + topLeft) || IsOccupied(p + topLeft));
+        bool outOfBoundsOrOccupied = false;
+        foreach (Position p in item.Size.Positions)
+        {
+            if (!IsInBounds(p + topLeft) || IsOccupied(p + topLeft))
+            {
+                outOfBoundsOrOccupied = true;
+                break;
+            }
+        }
         if (outOfBoundsOrOccupied) { return false; }
 
         _itemLookup[item] = topLeft;

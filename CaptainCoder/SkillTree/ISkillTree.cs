@@ -1,10 +1,11 @@
-﻿using System;
-namespace CaptainCoder.SkillTree;
+﻿namespace CaptainCoder.SkillTree;
 
 /// <summary>
-/// 
 /// </summary>
-public interface ISkillTree<Character>
+public interface ISkillTree<T> where T : ISkill
 {
-    public ISkillNode<Character> Root { get; }
+    /// <summary>
+    /// The root node of this skill tree
+    /// </summary>
+    public ISkillNode<T> Root { get; }
 }

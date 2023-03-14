@@ -54,7 +54,9 @@ public class SkillTreeBuilderTest
         ISkillNode<MockSkill> skillNode = SimpleTree.GetNode(DivineSense);
         Assert.Equal(DivineSense, skillNode.Skill);
         Assert.Single(skillNode.Children);
-        Assert.Contains(SimpleTree.GetNode(SacredOath), skillNode.Children);        
+        List<ISkillNode<MockSkill>> children = skillNode.Children.ToList();
+        ISkillNode<MockSkill> expected = SimpleTree.GetNode(SacredOath);
+        Assert.Contains(expected, children);        
         
         mockEntity.Setup(x => x.Skills).Returns(new HashSet<MockSkill>());
         Assert.False(skillNode.CheckRequirements(mockEntity.Object));

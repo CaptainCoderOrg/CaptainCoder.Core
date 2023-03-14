@@ -7,9 +7,13 @@ namespace CaptainCoder.SkillTree;
 public interface ISkillNode<T> where T : ISkill
 {
     /// <summary>
+    /// The skill that is unlocked with this node.
+    /// </summary>
+    public T Skill { get; }
+    /// <summary>
     /// A list of requirements that must be met to gain this skill
     /// </summary>
-    public IReadOnlyList<IRequirement> Requirements { get; }
+    public IReadOnlyList<IRequirement<T>> Requirements { get; }
 
     /// <summary>
     /// A list of children skill nodes
@@ -17,27 +21,15 @@ public interface ISkillNode<T> where T : ISkill
     IEnumerable<ISkillNode<T>> Children { get; }
 
     /// <summary>
-    /// Checks if the specified <paramref name="character"/> meets the
+    /// Checks if the specified <paramref name="entity"/> meets the
     /// requirements to acquire this skill.
     /// </summary>
-    public bool CheckRequirements(ISkilledEntity<T> character)
+    public bool CheckRequirements(ISkilledEntity<T> entity)
     {
-        foreach (IRequirement req in Requirements)
+        foreach (IRequirement<T> req in Requirements)
         {
-            if(!req.MeetsRequirement(character)) { return false; }
+            if(!req.MeetsRequirement(entity)) { return false; }
         }
         return true;
-    }
-
-    /// <summary>
-    /// A Requirement acts as a predicate on a character.
-    /// </summary>
-    public interface IRequirement
-    {
-        /// <summary>
-        /// Checks if the specified <paramref name="character"/> meets this
-        /// requirement.
-        /// </summary>
-        public bool MeetsRequirement(ISkilledEntity<T> character);
     }
 }

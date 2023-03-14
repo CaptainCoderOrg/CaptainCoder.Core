@@ -9,5 +9,5 @@ public interface ISkilledEntity<T> where T : ISkill
     /// <summary>
     /// A HashSet of skills that this entity has acquired
     /// </summary>
-    public HashSet<ISkillNode<T>> Skills { get; }
+    public HashSet<T> Skills { get; }
 }

@@ -3,32 +3,33 @@ namespace CaptainCoder.SkillTree;
 /// <summary>
 /// Represents a skill within a skill tree.
 /// </summary>
-/// <typeparam name="T">The type of skill this node holds</typeparam>
-public interface ISkillNode<T> where T : ISkill
+/// <typeparam name="S">The type of skill this node holds</typeparam>
+/// <typeparam name="E">The type of entity that can learn this skill</typeparam>
+public interface ISkillNode<E, S> where E : ISkilledEntity<S> where S : ISkill
 {
     /// <summary>
     /// The skill that is unlocked with this node.
     /// </summary>
-    public T Skill { get; }
+    public S Skill { get; }
     /// <summary>
     /// A list of requirements that must be met to gain this skill
     /// </summary>
-    public IReadOnlyList<IRequirement<T>> Requirements { get; }
+    public IReadOnlyList<IRequirement<E, S>> Requirements { get; }
 
     /// <summary>
     /// A list of children skill nodes
     /// </summary>
-    IEnumerable<ISkillNode<T>> Children { get; }
+    IEnumerable<ISkillNode<E, S>> Children { get; }
 
     /// <summary>
     /// Checks if the specified <paramref name="entity"/> meets the
     /// requirements to acquire this skill.
     /// </summary>
-    public bool CheckRequirements(ISkilledEntity<T> entity)
+    public bool CheckRequirements(E entity)
     {
-        foreach (IRequirement<T> req in Requirements)
+        foreach (IRequirement<E, S> req in Requirements)
         {
-            if(!req.MeetsRequirement(entity)) { return false; }
+            if (!req.MeetsRequirement(entity)) { return false; }
         }
         return true;
     }

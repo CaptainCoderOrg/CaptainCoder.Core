@@ -1,19 +1,22 @@
 namespace CaptainCoder.Tests.SkillTree;
 using CaptainCoder.SkillTree;
 using Moq;
+
+using Skill = MockSkill;
+using Entity = CaptainCoder.SkillTree.ISkilledEntity<MockSkill>;
 public class SkillTreeBuilderTest
 {
-    internal readonly static MockSkill Hero = new ("Hero");
-    internal readonly static MockSkill DivineSense = new ("Divine Sense");
-    internal readonly static MockSkill LayOnHands = new ("Lay on Hands");
-    internal readonly static MockSkill SpellCasting = new ("Spell Casting");
-    internal readonly static MockSkill SacredOath = new ("Sacred Oath");
+    internal readonly static Skill Hero = new ("Hero");
+    internal readonly static Skill DivineSense = new ("Divine Sense");
+    internal readonly static Skill LayOnHands = new ("Lay on Hands");
+    internal readonly static Skill SpellCasting = new ("Spell Casting");
+    internal readonly static Skill SacredOath = new ("Sacred Oath");
 
-    internal readonly ISkillTree<MockSkill> SimpleTree;
+    internal readonly ISkillTree<Entity, Skill> SimpleTree;
     
     public SkillTreeBuilderTest()
     {
-        SkillTreeBuilder<MockSkill> builder = new(Hero);
+        SkillTreeBuilder<Entity, Skill> builder = new(Hero);
 
         builder
             // Level 1
@@ -34,7 +37,7 @@ public class SkillTreeBuilderTest
     public void SimpleTreeTestRoot()
     {
         // Setup Mock Entity Object
-        Mock<ISkilledEntity<MockSkill>> mockEntity = new();
+        Mock<Entity> mockEntity = new();
         
         // Check Root Node
         Assert.Equal(SimpleTree.Root, SimpleTree.GetNode(Hero));
@@ -42,7 +45,7 @@ public class SkillTreeBuilderTest
         Assert.Equal(2, SimpleTree.Root.Children.Count());
         Assert.Contains(SimpleTree.GetNode(DivineSense), SimpleTree.Root.Children);
         Assert.Contains(SimpleTree.GetNode(SpellCasting), SimpleTree.Root.Children);
-        mockEntity.Setup(x => x.Skills).Returns(new HashSet<MockSkill>());
+        mockEntity.Setup(x => x.Skills).Returns(new HashSet<Skill>());
         Assert.True(SimpleTree.Root.CheckRequirements(mockEntity.Object));        
     }
 
@@ -50,18 +53,18 @@ public class SkillTreeBuilderTest
     public void SimpleTreeTestDivineSenseNode()
     {
         // Setup Mock Entity Object
-        Mock<ISkilledEntity<MockSkill>> mockEntity = new();
-        ISkillNode<MockSkill> skillNode = SimpleTree.GetNode(DivineSense);
+        Mock<Entity> mockEntity = new();
+        ISkillNode<Entity, Skill> skillNode = SimpleTree.GetNode(DivineSense);
         Assert.Equal(DivineSense, skillNode.Skill);
         Assert.Single(skillNode.Children);
-        List<ISkillNode<MockSkill>> children = skillNode.Children.ToList();
-        ISkillNode<MockSkill> expected = SimpleTree.GetNode(SacredOath);
+        List<ISkillNode<Entity, Skill>> children = skillNode.Children.ToList();
+        ISkillNode<Entity, Skill> expected = SimpleTree.GetNode(SacredOath);
         Assert.Contains(expected, children);        
         
-        mockEntity.Setup(x => x.Skills).Returns(new HashSet<MockSkill>());
+        mockEntity.Setup(x => x.Skills).Returns(new HashSet<Skill>());
         Assert.False(skillNode.CheckRequirements(mockEntity.Object));
 
-        mockEntity.Setup(x => x.Skills).Returns(new HashSet<MockSkill> { Hero });
+        mockEntity.Setup(x => x.Skills).Returns(new HashSet<Skill> { Hero });
         Assert.True(skillNode.CheckRequirements(mockEntity.Object));
     }
 
@@ -69,17 +72,17 @@ public class SkillTreeBuilderTest
     public void SimpleTreeTestSpellCastingNode()
     {
         // Setup Mock Entity Object
-        Mock<ISkilledEntity<MockSkill>> mockEntity = new();
-        ISkillNode<MockSkill> skillNode = SimpleTree.GetNode(SpellCasting);
+        Mock<Entity> mockEntity = new();
+        ISkillNode<Entity, Skill> skillNode = SimpleTree.GetNode(SpellCasting);
         Assert.Equal(SpellCasting, skillNode.Skill);
         Assert.Equal(2, skillNode.Children.Count());
         Assert.Contains(SimpleTree.GetNode(SacredOath), skillNode.Children);
         Assert.Contains(SimpleTree.GetNode(LayOnHands), skillNode.Children);
         
-        mockEntity.Setup(x => x.Skills).Returns(new HashSet<MockSkill>());
+        mockEntity.Setup(x => x.Skills).Returns(new HashSet<Skill>());
         Assert.False(skillNode.CheckRequirements(mockEntity.Object));
 
-        mockEntity.Setup(x => x.Skills).Returns(new HashSet<MockSkill> { Hero });
+        mockEntity.Setup(x => x.Skills).Returns(new HashSet<Skill> { Hero });
         Assert.True(skillNode.CheckRequirements(mockEntity.Object));
     }
 
@@ -87,23 +90,23 @@ public class SkillTreeBuilderTest
     public void SimpleTreeTestSacredOathNode()
     {
         // Setup Mock Entity Object
-        Mock<ISkilledEntity<MockSkill>> mockEntity = new();
-        ISkillNode<MockSkill> skillNode = SimpleTree.GetNode(SacredOath);
+        Mock<Entity> mockEntity = new();
+        ISkillNode<Entity, Skill> skillNode = SimpleTree.GetNode(SacredOath);
         Assert.Equal(SacredOath, skillNode.Skill);
         Assert.Empty(skillNode.Children);
         
-        mockEntity.Setup(x => x.Skills).Returns(new HashSet<MockSkill>());
+        mockEntity.Setup(x => x.Skills).Returns(new HashSet<Skill>());
         Assert.False(skillNode.CheckRequirements(mockEntity.Object));
 
-        mockEntity.Setup(x => x.Skills).Returns(new HashSet<MockSkill> { Hero });
+        mockEntity.Setup(x => x.Skills).Returns(new HashSet<Skill> { Hero });
         Assert.False(skillNode.CheckRequirements(mockEntity.Object));
-        mockEntity.Setup(x => x.Skills).Returns(new HashSet<MockSkill> { Hero, DivineSense });
-        Assert.False(skillNode.CheckRequirements(mockEntity.Object));
-
-        mockEntity.Setup(x => x.Skills).Returns(new HashSet<MockSkill> { Hero, SpellCasting });
+        mockEntity.Setup(x => x.Skills).Returns(new HashSet<Skill> { Hero, DivineSense });
         Assert.False(skillNode.CheckRequirements(mockEntity.Object));
 
-        mockEntity.Setup(x => x.Skills).Returns(new HashSet<MockSkill> { SpellCasting, DivineSense });
+        mockEntity.Setup(x => x.Skills).Returns(new HashSet<Skill> { Hero, SpellCasting });
+        Assert.False(skillNode.CheckRequirements(mockEntity.Object));
+
+        mockEntity.Setup(x => x.Skills).Returns(new HashSet<Skill> { SpellCasting, DivineSense });
         Assert.True(skillNode.CheckRequirements(mockEntity.Object));
     }
 
@@ -111,18 +114,18 @@ public class SkillTreeBuilderTest
     public void SimpleTreeTestLayHandsNode()
     {
         // Setup Mock Entity Object
-        Mock<ISkilledEntity<MockSkill>> mockEntity = new();
-        ISkillNode<MockSkill> skillNode = SimpleTree.GetNode(LayOnHands);
+        Mock<Entity> mockEntity = new();
+        ISkillNode<Entity, Skill> skillNode = SimpleTree.GetNode(LayOnHands);
         Assert.Equal(LayOnHands, skillNode.Skill);
         Assert.Empty(skillNode.Children);
         
-        mockEntity.Setup(x => x.Skills).Returns(new HashSet<MockSkill>());
+        mockEntity.Setup(x => x.Skills).Returns(new HashSet<Skill>());
         Assert.False(skillNode.CheckRequirements(mockEntity.Object));
 
-        mockEntity.Setup(x => x.Skills).Returns(new HashSet<MockSkill> { Hero });
+        mockEntity.Setup(x => x.Skills).Returns(new HashSet<Skill> { Hero });
         Assert.False(skillNode.CheckRequirements(mockEntity.Object));
 
-        mockEntity.Setup(x => x.Skills).Returns(new HashSet<MockSkill> { SpellCasting });
+        mockEntity.Setup(x => x.Skills).Returns(new HashSet<Skill> { SpellCasting });
         Assert.True(skillNode.CheckRequirements(mockEntity.Object));
     }
 }

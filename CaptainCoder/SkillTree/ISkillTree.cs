@@ -2,17 +2,17 @@
 
 /// <summary>
 /// </summary>
-public interface ISkillTree<T> where T : ISkill
+public interface ISkillTree<E, S> where E : ISkilledEntity<S> where S : ISkill
 {
     /// <summary>
     /// The root node of this skill tree
     /// </summary>
-    public ISkillNode<T> Root { get; }
+    public ISkillNode<E, S> Root { get; }
 
     /// <summary>
-    /// Retrieves the <see cref="ISkillNode{T}"/> associated with the specified
+    /// Retrieves the <see cref="ISkillNode{E, S}"/> associated with the specified
     /// <paramref name="skill"/>. Throws an exception if the specified <paramref
-    /// name="skill"/> is not in this <see cref="ISkillTree{T}"/>.
+    /// name="skill"/> is not in this <see cref="ISkillTree{E, S}"/>.
     /// </summary>
-    public ISkillNode<T> GetNode(T skill);
+    public ISkillNode<E, S> GetNode(S skill);
 }

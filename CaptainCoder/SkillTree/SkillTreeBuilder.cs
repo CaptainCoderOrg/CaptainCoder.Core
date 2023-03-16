@@ -87,6 +87,7 @@ public class SkillTreeBuilder<E, S> where E : ISkilledEntity<S> where S : ISkill
             BuildLookup(Root);
         }
         public ISkillNode<E, S> Root { get; }
+        public IEnumerable<ISkillNode<E, S>> Nodes => _lookup.Values;
         public ISkillNode<E, S> GetNode(S skill) => _lookup[skill];
 
         private void BuildLookup(ISkillNode<E, S> current)

@@ -2,7 +2,7 @@
 
 /// <summary>
 /// </summary>
-public interface ISkillTree<E, S> where E : ISkilledEntity<S> where S : ISkill
+public interface ISkillTree<E, S> where E : ISkilledEntity<S>
 {
     /// <summary>
     /// The root node of this skill tree

@@ -22,7 +22,7 @@ namespace CaptainCoder.SkillTree;
 /// </example>
 /// <typeparam name="S">The skill type that will be contained within this tree.</typeparam>
 /// <typeparam name="E">The entity type that will be able to use this skill tree.</typeparam>
-public class SkillTreeBuilder<E, S> where E : ISkilledEntity<S> where S : ISkill
+public class SkillTreeBuilder<E, S> where E : ISkilledEntity<S>
 {
     private readonly SkillNode _root;
     private readonly Dictionary<S, SkillNode> _nodes = new();

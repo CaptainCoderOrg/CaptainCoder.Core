@@ -2,8 +2,8 @@ namespace CaptainCoder.Tests.SkillTree;
 using CaptainCoder.SkillTree;
 using Moq;
 
-using Skill = MockSkill;
-using Entity = CaptainCoder.SkillTree.ISkilledEntity<MockSkill>;
+using Skill = String;
+using Entity = CaptainCoder.SkillTree.ISkilledEntity<string>;
 public class SkillTreeBuilderTest
 {
     internal readonly static Skill Hero = new ("Hero");

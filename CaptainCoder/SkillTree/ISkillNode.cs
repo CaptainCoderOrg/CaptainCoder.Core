@@ -5,7 +5,7 @@ namespace CaptainCoder.SkillTree;
 /// </summary>
 /// <typeparam name="S">The type of skill this node holds</typeparam>
 /// <typeparam name="E">The type of entity that can learn this skill</typeparam>
-public interface ISkillNode<E, S> where E : ISkilledEntity<S> where S : ISkill
+public interface ISkillNode<E, S> where E : ISkilledEntity<S>
 {
     /// <summary>
     /// The skill that is unlocked with this node.

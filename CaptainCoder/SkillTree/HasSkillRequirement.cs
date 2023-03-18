@@ -7,7 +7,7 @@ namespace CaptainCoder.SkillTree;
 /// <typeparam name="S">The skill type. The type should be useable with a
 /// HashSet and Dictionary</typeparam>
 /// <typeparam name="E">The entity type.</typeparam>
-public class HasSkillRequirement<E, S> : IRequirement<E, S> where S : ISkill where E : ISkilledEntity<S>
+public class HasSkillRequirement<E, S> : IRequirement<E, S> where E : ISkilledEntity<S>
 {
     /// <summary>
     /// Instantiates an instance for the specified <paramref name="skill"/>.

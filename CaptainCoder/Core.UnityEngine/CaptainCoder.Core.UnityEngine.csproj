@@ -5,6 +5,7 @@
     <LangVersion>11</LangVersion>
     <Nullable>enable</Nullable>
     <RootNamespace>CaptainCoder.Core.UnityEngine</RootNamespace>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

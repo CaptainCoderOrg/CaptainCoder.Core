@@ -3,8 +3,18 @@ using UnityEngine;
 using UE = UnityEngine;
 
 namespace CaptainCoder.Core.UnityEngine;
+/// <summary>
+/// The <see cref="IHasGuid"/> interface provides a single string property
+/// representing a unique id. By default, this interface provides an
+/// implementation of <see cref="ISerializationCallbackReceiver"/> that will
+/// automatically generate a Guid on serialization if one has not been
+/// specified.
+/// </summary>
 public interface IHasGuid : ISerializationCallbackReceiver
 {
+    /// <summary>
+    /// Represents a unique string identifier
+    /// </summary>
     public string Guid { get; protected set; }
     void ISerializationCallbackReceiver.OnBeforeSerialize()
     {

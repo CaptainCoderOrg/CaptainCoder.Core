@@ -1,0 +1,1 @@
+To compile this library, you must add UnityEngine.dll and UnityEngine.CoreModule.dll to the `libs` folder

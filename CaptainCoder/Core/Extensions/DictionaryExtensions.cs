@@ -18,4 +18,15 @@ public static class DictionaryExtensions
         }
         return true;
     } 
+
+    /// <summary>
+    /// Generates an enumerable of tuples containing each key value pair in the dictionary
+    /// </summary>
+    public static IEnumerable<(K, V)> ToTuples<K,V>(this Dictionary<K,V> dict)
+    {
+        foreach ((K key, V value) in dict)
+        {
+            yield return (key, value);
+        }
+    }
 }

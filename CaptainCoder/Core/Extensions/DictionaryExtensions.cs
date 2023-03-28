@@ -29,4 +29,19 @@ public static class DictionaryExtensions
             yield return (key, value);
         }
     }
+
+    /// <summary>
+    /// Given an enumerable of key values, creates a dictionary. If a duplicate key is found
+    /// this method throws an exception.
+    /// </summary>
+    public static Dictionary<K, V> ToDictionary<K,V>(this IEnumerable<(K, V)> tuple)
+    {
+        Dictionary<K,V> dict = new();
+        foreach ((K key, V value) in tuple)
+        {
+            if (dict.ContainsKey(key)) { throw new System.ArgumentException($"The provided enumerator contained a duplicate key: {key}."); }
+            dict[key] = value;
+        }
+        return dict;
+    }
 }

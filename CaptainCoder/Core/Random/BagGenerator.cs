@@ -44,7 +44,7 @@ public class BagGenerator<T> : IGenerator<T>
     public BagGenerator(IEnumerable<T> bag) : this(bag, 1) {}
 
     /// <inheritdoc/>
-    public T Next()
+    public virtual T Next()
     {
         if (_bag.Count == 0) { FillBag(); }
         return _elems[_bag.Dequeue()];

@@ -9,7 +9,7 @@ internal class DiceNotationParser
     
     private readonly Queue<string> toParse;
     private bool _result;
-    private string _errorMessage;
+    private string? _errorMessage;
     private IRollableExpr? _expr;
 
     internal DiceNotationParser(string notation)
@@ -21,7 +21,7 @@ internal class DiceNotationParser
     internal bool Parse(out IRollableExpr expr, out string errorMessage)
     {
         expr = _expr!;
-        errorMessage = _errorMessage;
+        errorMessage = _errorMessage!;
         return _result;
     }
 
@@ -75,13 +75,7 @@ internal class DiceNotationParser
         if (DiceGroup.TryParse(symbol, out DiceGroup group)) { return new DiceGroupExpr(group); }
         return new IdentifierExpr(symbol);
     }
-
-    private void HandleChar(char ch)
-    {
-        if (char.IsWhiteSpace(ch)) { return; }
-
-    }
-
+    
     private static readonly Dictionary<string, IRollableExpr> _cache = new ();
     internal static IRollableExpr Parse(string notation)
     {
@@ -113,7 +107,7 @@ internal record IntExpr(int Value) : IRollableExpr
 internal record DiceGroupExpr(DiceGroup Group) : IRollableExpr
 {
     public RollResult Eval(IRollContext context, IRandom rng) => Group.Roll(rng);
-    public string Standardized => Group.Standardized;
+    public string Standardized => Group.Notation;
 }
 
 internal record IdentifierExpr(string Id) : IRollableExpr

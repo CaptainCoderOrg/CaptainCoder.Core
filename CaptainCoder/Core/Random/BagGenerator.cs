@@ -55,5 +55,4 @@ public class BagGenerator<T> : IGenerator<T>
         .Range(0, _copies * _elems.Length)
         .Select(i => i % _elems.Length)
         .OrderBy(_ => _rng.NextDouble());
-
 }

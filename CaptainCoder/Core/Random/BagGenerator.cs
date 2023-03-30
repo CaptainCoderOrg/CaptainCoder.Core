@@ -22,11 +22,10 @@ public class BagGenerator<T> : IGenerator<T>
     /// </summary>
     public BagGenerator(IRandom rng, IEnumerable<T> elements, int copies)
     {
-        if (rng == null) { throw new ArgumentNullException("Random number generator must not be null."); }
         if (elements == null) { throw new ArgumentNullException("Bag must not be null."); }
         if (elements.Count() < 1) { throw new ArgumentException("Bag must contain at least one element."); }
         if (copies < 1) { throw new ArgumentException("Generator must contain at least one copy."); }
-        _rng = rng;
+        _rng = rng ?? throw new ArgumentNullException("Random number generator must not be null.");
         _elems = elements.ToArray();
         _copies = copies;
         _bag = new Queue<int>();

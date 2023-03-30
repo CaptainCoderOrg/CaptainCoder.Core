@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
-namespace CaptainCoder.Core.Dice;
+using CaptainCoder.Core;
+
+namespace CaptainCoder.Dice;
 
 internal class DiceNotationParser
 {
@@ -10,13 +12,13 @@ internal class DiceNotationParser
     private string _errorMessage;
     private IRollableExpr? _expr;
 
-    public DiceNotationParser(string notation)
+    internal DiceNotationParser(string notation)
     {
         toParse = new Queue<string>(notation.Split(new char[0]));
         Init();
     }
 
-    public bool Parse(out IRollableExpr expr, out string errorMessage)
+    internal bool Parse(out IRollableExpr expr, out string errorMessage)
     {
         expr = _expr!;
         errorMessage = _errorMessage;
@@ -71,8 +73,7 @@ internal class DiceNotationParser
     {
         if (int.TryParse(symbol, out int value)) { return new IntExpr(value); }
         if (DiceGroup.TryParse(symbol, out DiceGroup group)) { return new DiceGroupExpr(group); }
-
-        throw new FormatException($"Expected value but found {symbol}");
+        return new IdentifierExpr(symbol);
     }
 
     private void HandleChar(char ch)
@@ -82,7 +83,7 @@ internal class DiceNotationParser
     }
 
     private static readonly Dictionary<string, IRollableExpr> _cache = new ();
-    public static IRollableExpr Parse(string notation)
+    internal static IRollableExpr Parse(string notation)
     {
         if (_cache.TryGetValue(notation, out var cached))
         {
@@ -99,31 +100,31 @@ internal class DiceNotationParser
 
 internal interface IRollableExpr
 {
-    public RollResult Eval(IRollContext context);
+    public RollResult Eval(IRollContext context, IRandom rng);
     public string Standardized { get; }
 }
 
 internal record IntExpr(int Value) : IRollableExpr
 {
-    public RollResult Eval(IRollContext context) => new (Value.ToString(), Value);
+    public RollResult Eval(IRollContext context, IRandom rng) => new (Value.ToString(), Value);
     public string Standardized => Value.ToString();
 }
 
 internal record DiceGroupExpr(DiceGroup Group) : IRollableExpr
 {
-    public RollResult Eval(IRollContext context) => Group.Roll();
+    public RollResult Eval(IRollContext context, IRandom rng) => Group.Roll(rng);
     public string Standardized => Group.Standardized;
 }
 
 internal record IdentifierExpr(string Id) : IRollableExpr
 {
-    public RollResult Eval(IRollContext context) => new ($"{context.Lookup(Id)} ({Id})", context.Lookup(Id));
+    public RollResult Eval(IRollContext context, IRandom rng) => new ($"{context.Lookup(Id)} ({Id})", context.Lookup(Id));
     public string Standardized => Id;
 }
 
 internal record BinopExpr(IRollableExpr LeftOperand, IRollableExpr RightOperand, Func<RollResult, RollResult, RollResult> Operator, char Op) : IRollableExpr
 {
-    public RollResult Eval(IRollContext context) => Operator(LeftOperand.Eval(context), RightOperand.Eval(context));
+    public RollResult Eval(IRollContext context, IRandom rng) => Operator(LeftOperand.Eval(context, rng), RightOperand.Eval(context, rng));
     public string Standardized => $"({LeftOperand.Standardized} {Op} {RightOperand.Standardized})";
 }
 

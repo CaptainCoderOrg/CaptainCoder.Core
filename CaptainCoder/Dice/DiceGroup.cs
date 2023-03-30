@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
-namespace CaptainCoder.Core.Dice;
+using CaptainCoder.Core;
+namespace CaptainCoder.Dice;
 public record DiceGroup : IRollable
 {
     private IRandom _rng;
@@ -19,12 +20,13 @@ public record DiceGroup : IRollable
     public int Min => Count;
     public int Max => Count * Sides;
     public string Standardized => $"{Count}d{Sides}";
-    public RollResult Roll() 
+    public RollResult Roll() => Roll(_rng);
+    public RollResult Roll(IRandom rng) 
     {
-        int RollDie() => _rng.Next(1, Sides + 1);
+        int RollDie() => rng.Next(1, Sides + 1);
         var dice = Enumerable.Repeat(RollDie, Count).Select(roll => roll());
         int[] rolls = dice.ToArray();
-        int total = dice.Sum();
+        int total = rolls.Sum();
         string message = $"{Count}d{Sides} ({string.Join(" + ", dice)} = {total})";
         return new RollResult(message, total);
     }

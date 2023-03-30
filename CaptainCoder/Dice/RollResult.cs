@@ -1,3 +1,4 @@
+namespace CaptainCoder.Dice;
 public record RollResult(string Message, int Value)
 {
     public static RollResult operator +(RollResult a, RollResult b)

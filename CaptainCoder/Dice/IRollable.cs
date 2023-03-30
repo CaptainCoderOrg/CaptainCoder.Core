@@ -1,4 +1,4 @@
-namespace CaptainCoder.Core.Dice;
+namespace CaptainCoder.Dice;
 
 public interface IRollable
 {

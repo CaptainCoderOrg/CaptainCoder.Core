@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
-namespace CaptainCoder.Core.Dice;
+using CaptainCoder.Core;
+namespace CaptainCoder.Dice;
 
 public record DiceNotation
 {
@@ -10,8 +11,7 @@ public record DiceNotation
     public string Notation { get; }
 
     private DiceNotation(string notation, IRandom randomSource, IRollableExpr expr) => (Notation, _rng, _expr) = (notation, randomSource, expr);
-    public RollResult Roll(IRollContext context) => _expr.Eval(context);
-
+    public RollResult Roll(IRollContext context) => _expr.Eval(context, _rng);
     public static DiceNotation Parse(string diceNotation) => Parse(diceNotation, IRandom.Shared);
     public static DiceNotation Parse(string diceNotation, IRandom randomSource)
     {

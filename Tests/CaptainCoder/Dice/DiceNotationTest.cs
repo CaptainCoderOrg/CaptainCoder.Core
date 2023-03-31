@@ -7,7 +7,7 @@ public class DiceNotationTest
     [Fact]
     public void TestParseAdd()
     {
-        Mock<IRandom> randomSource = new ();
+        Mock<IRandom> randomSource = new();
         Mock<IRollContext> context = new();
         DiceNotation threeDeeSix = DiceNotation.Parse("3d6 + Strength", randomSource.Object);
 
@@ -28,7 +28,7 @@ public class DiceNotationTest
     [Fact]
     public void TestParseSub()
     {
-        Mock<IRandom> randomSource = new ();
+        Mock<IRandom> randomSource = new();
         Mock<IRollContext> context = new();
         DiceNotation threeDeeSix = DiceNotation.Parse("3d6 - Strength", randomSource.Object);
 
@@ -47,16 +47,16 @@ public class DiceNotationTest
     [Fact]
     public void TestSimple()
     {
-        Mock<IRandom> randomSource = new ();
+        Mock<IRandom> randomSource = new();
         Mock<IRollContext> context = new();
-        DiceNotation threeDeeSix = DiceNotation.Parse("3d6", randomSource.Object);
+        DiceNotation threeDeeSix = DiceNotation.Parse("3d6");
 
         randomSource.SetupSequence(r => r.Next(1, 7)).Returns(1).Returns(3).Returns(5);
-        RollResult result = threeDeeSix.Roll(context.Object);
+        RollResult result = threeDeeSix.Roll(null, randomSource.Object);
         Assert.Equal(9, result.Value);
 
         randomSource.SetupSequence(r => r.Next(1, 7)).Returns(1).Returns(1).Returns(1);
 
-        Assert.Equal(3, threeDeeSix.Roll(context.Object).Value);
+        Assert.Equal(3, threeDeeSix.Roll(context.Object, randomSource.Object).Value);
     }
 }

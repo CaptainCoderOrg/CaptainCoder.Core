@@ -11,7 +11,7 @@ public record RollResult(string Message, int Value)
     public static RollResult operator +(RollResult a, RollResult b)
     {
         int value = a.Value + b.Value;
-        string message = $"{a.Message} + {b.Message} = {value}";
+        string message = $"({a.Message} + {b.Message} = {value})";
         return new RollResult(message, value);
     }
 
@@ -21,7 +21,7 @@ public record RollResult(string Message, int Value)
     public static RollResult operator -(RollResult a, RollResult b)
     {
         int value = a.Value - b.Value;
-        string message = $"{a.Message} - {b.Message} = {value}";
+        string message = $"({a.Message} - {b.Message} = {value})";
         return new RollResult(message, value);
     }
 
@@ -31,7 +31,7 @@ public record RollResult(string Message, int Value)
     public static RollResult operator *(RollResult a, RollResult b)
     {
         int value = a.Value * b.Value;
-        string message = $"{a.Message} * {b.Message} = {value}";
+        string message = $"({a.Message} * {b.Message} = {value})";
         return new RollResult(message, value);
     }
 
@@ -41,8 +41,9 @@ public record RollResult(string Message, int Value)
     public static RollResult operator /(RollResult a, RollResult b)
     {
         int denom = b.Value == 0 ? 1 : b.Value;
+        string denomMessage = b.Value == 0 ? "(Division by Zero used 1 instead)" : string.Empty;
         int value = a.Value / denom;
-        string message = $"{a.Message} / {b.Message} = {value}";
+        string message = $"({a.Message} / {b.Message}{denomMessage} = {value})";
         return new RollResult(message, value);
     }
 

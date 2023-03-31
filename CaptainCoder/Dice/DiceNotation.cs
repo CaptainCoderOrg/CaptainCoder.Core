@@ -54,3 +54,34 @@ public record DiceNotation
         return new DiceNotation(diceNotation, randomSource, parseResult.Value);
     }
 }
+
+/// <summary>
+/// This class provides convenience methods for converting strings to dice notations
+/// </summary>
+public static class DiceNotationExtensions
+{
+    /// <summary>
+    /// Parses the specified string as a <see cref="DiceNotation"/>.
+    /// </summary>
+    public static DiceNotation ToDiceNotation(this string notation) => ToDiceNotation(notation, IRandom.Shared);
+    /// <summary>
+    /// Parses the specified string as a <see cref="DiceNotation"/> specifying the source of randomness.
+    /// </summary>
+    public static DiceNotation ToDiceNotation(this string notation, IRandom randomSource) => DiceNotation.Parse(notation, randomSource);
+    /// <summary>
+    /// Parses and rolls the specified string as a dice notation that contains no variables.
+    /// </summary>
+    public static RollResult SimpleRoll(this string notation) => Roll(notation, null!, IRandom.Shared);
+    /// <summary>
+    /// Parses and rolls the specified string as a dice notation that contains no variables specifying the source of randomness.
+    /// </summary>
+    public static RollResult SimpleRoll(this string notation, IRandom randomSource) => Roll(notation, null!, randomSource);
+    /// <summary>
+    /// Parses and rolls the specified string as a dice notation using the specified context.
+    /// </summary>
+    public static RollResult Roll(this string notation, IRollContext context) => DiceNotation.Parse(notation, IRandom.Shared).Roll(context, IRandom.Shared);
+    /// <summary>
+    /// Parses and rolls the specified string as a dice notation using the specified context and source of randomness.
+    /// </summary>
+    public static RollResult Roll(this string notation, IRollContext context, IRandom randomSource) => DiceNotation.Parse(notation, randomSource).Roll(context, randomSource);
+}

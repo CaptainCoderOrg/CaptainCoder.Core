@@ -53,7 +53,7 @@ public class DiceNotationTest
         DiceNotation threeDeeSix = DiceNotation.Parse("3d6");
 
         randomSource.SetupSequence(r => r.Next(1, 7)).Returns(1).Returns(3).Returns(5);
-        RollResult result = threeDeeSix.Roll(null, randomSource.Object);
+        RollResult result = threeDeeSix.Roll(null!, randomSource.Object);
         Assert.Equal(9, result.Value);
 
         randomSource.SetupSequence(r => r.Next(1, 7)).Returns(1).Returns(1).Returns(1);
@@ -79,60 +79,60 @@ public class DiceNotationTest
     [Fact]
     public void TestFactorParser()
     {
-        IResult<IRollableExpr> result = Parsers.SingleTerm.TryParse("5");
-        RollResult rollResult = result.Value.Eval(null, null);
+        IResult<IRollableExpr> result = Parsers.Term.TryParse("5");
+        RollResult rollResult = result.Value.Eval(null!, null!);
         Assert.Equal(5, rollResult.Value);
 
-        result = Parsers.SingleTerm.TryParse("5 * 2");
-        rollResult = result.Value.Eval(null, null);
+        result = Parsers.Term.TryParse("5 * 2");
+        rollResult = result.Value.Eval(null!, null!);
         Assert.Equal(10, rollResult.Value);
 
-        result = Parsers.SingleTerm.TryParse("5 * 8 / 2");
-        rollResult = result.Value.Eval(null, null);
+        result = Parsers.Term.TryParse("5 * 8 / 2");
+        rollResult = result.Value.Eval(null!, null!);
         Assert.Equal(20, rollResult.Value);
     }
 
     [Fact]
     public void TestArithmeticParser()
     {
-        IResult<IRollableExpr> result = Parsers.SingleArithmetic.TryParse("5");
-        RollResult rollResult = result.Value.Eval(null, null);
+        IResult<IRollableExpr> result = Parsers.ArithmeticExpr.TryParse("5");
+        RollResult rollResult = result.Value.Eval(null!, null!);
         Assert.Equal(5, rollResult.Value);
 
-        result = Parsers.SingleArithmetic.TryParse("5 * 2");
-        rollResult = result.Value.Eval(null, null);
+        result = Parsers.ArithmeticExpr.TryParse("5 * 2");
+        rollResult = result.Value.Eval(null!, null!);
         Assert.Equal(10, rollResult.Value);
 
-        result = Parsers.SingleArithmetic.TryParse("5 * 8 / 2");
-        rollResult = result.Value.Eval(null, null);
+        result = Parsers.ArithmeticExpr.TryParse("5 * 8 / 2");
+        rollResult = result.Value.Eval(null!, null!);
         Assert.Equal(20, rollResult.Value);
 
-        result = Parsers.SingleArithmetic.TryParse("5 * 2 + 7");
-        rollResult = result.Value.Eval(null, null);
+        result = Parsers.ArithmeticExpr.TryParse("5 * 2 + 7");
+        rollResult = result.Value.Eval(null!, null!);
         Assert.Equal(17, rollResult.Value);
 
-        result = Parsers.SingleArithmetic.TryParse("10 / 2");
-        rollResult = result.Value.Eval(null, null);
+        result = Parsers.ArithmeticExpr.TryParse("10 / 2");
+        rollResult = result.Value.Eval(null!, null!);
         Assert.Equal(5, rollResult.Value);
 
-        result = Parsers.SingleArithmetic.TryParse("2 + 10 / 2");
-        rollResult = result.Value.Eval(null, null);
+        result = Parsers.ArithmeticExpr.TryParse("2 + 10 / 2");
+        rollResult = result.Value.Eval(null!, null!);
         Assert.Equal(7, rollResult.Value);
 
-        result = Parsers.SingleArithmetic.TryParse("10 * 2 + 10 / 2");
-        rollResult = result.Value.Eval(null, null);
+        result = Parsers.ArithmeticExpr.TryParse("10 * 2 + 10 / 2");
+        rollResult = result.Value.Eval(null!, null!);
         Assert.Equal(25, rollResult.Value);
     }
 
     [Fact]
     public void TestParens()
     {
-        IResult<IRollableExpr> result = Parsers.SingleArithmetic.TryParse("(2 + 2)");
-        RollResult rollResult = result.Value.Eval(null, null);
+        IResult<IRollableExpr> result = Parsers.ArithmeticExpr.TryParse("(2 + 2)");
+        RollResult rollResult = result.Value.Eval(null!, null!);
         Assert.Equal(4, rollResult.Value);
 
-        result = Parsers.SingleArithmetic.TryParse("(2 + 2) * (7 - 2)");
-        rollResult = result.Value.Eval(null, null);
+        result = Parsers.ArithmeticExpr.TryParse("(2 + 2) * (7 - 2)");
+        rollResult = result.Value.Eval(null!, null!);
         Assert.Equal(20, rollResult.Value);
     }
 
@@ -140,7 +140,15 @@ public class DiceNotationTest
     public void TestPrecedent()
     {
         DiceNotation precedent = DiceNotation.Parse("1 + 2 * 3 - 4 / 2");
-        RollResult result = precedent.Roll(null);
+        RollResult result = precedent.Roll(null!);
         Assert.Equal(5, result.Value);
+    }
+
+    [Fact]
+    public void TestLeftToRight()
+    {
+        DiceNotation precedent = DiceNotation.Parse("5 * 4 / 2 / 2 * 5");
+        RollResult result = precedent.Roll(null!);
+        Assert.Equal(25, result.Value);
     }
 }

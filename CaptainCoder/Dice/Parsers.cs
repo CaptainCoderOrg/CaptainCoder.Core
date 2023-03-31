@@ -1,105 +1,21 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Sprache;
 namespace CaptainCoder.Dice;
+
+// Dice Notation Grammar:
+// Expr: $ArithmeticExpr^
+// ArithmeticExpr: Term ((+|-) Term)*
+// Term: Factor ((*|/) Factor)*
+// Factor: (ArithmeticExpr) | Value
+// Value: DiceGroup | Int | Id
 internal static class Parsers
 {
-    /*
-    Grammar:
-    Expr: ArithmeticExpr
-    ArithmeticExpr: Term ((+|-) Term)*
-    Term: Factor ((*|/) Factor)*
-    Factor: (ArithmeticExpr) | Value
-    Value: diceGroup | int | id
-
-    */
-
-    public static Parser<DiceGroup> DiceGroup { get; } =
-        from leading in Parse.WhiteSpace.Many()
-        from count in Integer
-        from d in Parse.Char('d')
-        from sides in Integer
-        select new DiceGroup(count, sides);
-
-    private static Parser<int> Integer { get; } =
+    #region Helper Parsers
+    public static Parser<int> Integer { get; } =
         from leading in Parse.WhiteSpace.Many()
         from n in Parse.Digit.AtLeastOnce()
         select int.Parse(string.Join("", n));
-
-    public static Parser<IntExpr> IntExpr { get; } =
-        from leading in Parse.WhiteSpace.Many()
-        from value in Integer
-        select new IntExpr(value);
-
-    public static Parser<DiceGroupExpr> DiceGroupExpr { get; } =
-        from leading in Parse.WhiteSpace.Many()
-        from value in DiceGroup
-        select new DiceGroupExpr(value);
-
-    public static Parser<IdentifierExpr> IdentifierExpr { get; } =
-        from leading in Parse.WhiteSpace.Many()
-        from value in Parse.Letter.Many()
-        select new IdentifierExpr(string.Join("", value));
-    public static Parser<IRollableExpr> Value { get; } = (DiceGroupExpr as Parser<IRollableExpr>).Or(IntExpr).Or(IdentifierExpr);
-
-    public static Parser<CurriedBinop> AddPartial { get; } =
-        from leading in Parse.WhiteSpace.Many()
-        from plus in Parse.Char('+')
-        select new CurriedBinop((IRollableExpr a, IRollableExpr b) => new AddExpr(a, b));
-    public static Parser<CurriedBinop> SubPartial { get; } =
-        from leading in Parse.WhiteSpace.Many()
-        from plus in Parse.Char('-')
-        select new CurriedBinop((IRollableExpr a, IRollableExpr b) => new SubExpr(a, b));
-    public static Parser<CurriedBinop> MulPartial { get; } =
-        from leading in Parse.WhiteSpace.Many()
-        from plus in Parse.Char('*')
-        select new CurriedBinop((IRollableExpr a, IRollableExpr b) => new MulExpr(a, b));
-    public static Parser<CurriedBinop> DivPartial { get; } =
-        from leading in Parse.WhiteSpace.Many()
-        from plus in Parse.Char('/')
-        select new CurriedBinop((IRollableExpr a, IRollableExpr b) => new DivExpr(a, b));
-
-    public static Parser<IRollableExpr> SingleArithmetic { get; } =
-        from leading in Parse.WhiteSpace.Many()
-        from term in SingleTerm
-        from rightTerms in RightArithmetic.Many()
-        select RightOp.Chain(rightTerms)?.Invoke(term) ?? term;
-
-    public static Parser<RightOp> RightArithmetic { get; } =
-        from leading in Parse.WhiteSpace.Many()
-        from op in AddPartial.Or(SubPartial)
-        from term in SingleTerm
-        select new RightOp(op, term);
-
-    public static Parser<IRollableExpr> Factor { get; } = Parens(SingleArithmetic).Or(Value);
-
-    public static Parser<IRollableExpr> SingleTerm { get; } =
-        from leading in Parse.WhiteSpace.Many()
-        from factor in Factor
-        from rightExprs in RightTerm.Many()
-        select RightOp.Chain(rightExprs)?.Invoke(factor) ?? factor;
-
-    public static Parser<RightOp> RightTerm { get; } =
-        from leading in Parse.WhiteSpace.Many()
-        from op in MulPartial.Or(DivPartial)
-        from factor in Factor
-        select new RightOp(op, factor);
-
-    public static Parser<IRollableExpr> Expr { get; } = SingleArithmetic;
-
-    public static Parser<LeftOp> LeftExpr { get; } =
-        from leading in Parse.WhiteSpace.Many()
-        from left in Expr
-        from op in MulPartial.Or(DivPartial).Or(AddPartial).Or(SubPartial)
-        select new LeftOp(left, op);
-
-    public static Parser<IRollableExpr> Expression { get; } =
-        from leading in Parse.WhiteSpace.Many()
-        from left in LeftExpr.Many()
-        from last in Expr
-        from trailing in Parse.WhiteSpace.Many()
-        select LeftOp.Chain(left)?.Invoke(last) ?? last;
 
     public static Parser<T> Parens<T>(Parser<T> inner)
     {
@@ -112,32 +28,101 @@ internal static class Parsers
             select elem;
         return result;
     }
+    #endregion
+
+    #region Value Parsers
+    // DiceGroup ::= [Int]d[Int]
+    public static Parser<DiceGroup> DiceGroup { get; } =
+        from leading in Parse.WhiteSpace.Many()
+        from count in Integer
+        from d in Parse.Char('d')
+        from sides in Integer
+        select new DiceGroup(count, sides);
+    public static Parser<DiceGroupExpr> DiceGroupExpr { get; } =
+        from leading in Parse.WhiteSpace.Many()
+        from value in DiceGroup
+        select new DiceGroupExpr(value);
+    
+    // Int ::= [Digit]+
+    public static Parser<IntExpr> IntExpr { get; } =
+        from leading in Parse.WhiteSpace.Many()
+        from value in Integer
+        select new IntExpr(value);
+    
+    // Id ::= [a-Z]+
+    public static Parser<IdentifierExpr> IdentifierExpr { get; } =
+        from leading in Parse.WhiteSpace.Many()
+        from value in Parse.Letter.AtLeastOnce()
+        select new IdentifierExpr(string.Join("", value));
+
+    // Value ::= DiceGroup | Int | Id
+    public static Parser<IRollableExpr> Value { get; } = (DiceGroupExpr as Parser<IRollableExpr>).Or(IntExpr).Or(IdentifierExpr);
+    #endregion
+
+    #region Binary Operators
+    public static Parser<BinaryOperator> Op(char ch, BinaryOperator binOp) =>
+        from leading in Parse.WhiteSpace.Many()
+        from opChar in Parse.Char(ch)
+        select binOp;
+    public static Parser<BinaryOperator> AddOp { get; } = Op('+', (a, b) => new AddExpr(a, b));
+    public static Parser<BinaryOperator> SubOp { get; } = Op('-', (a, b) => new SubExpr(a, b));
+    public static Parser<BinaryOperator> MulOp { get; } = Op('*', (a, b) => new MulExpr(a, b));
+    public static Parser<BinaryOperator> DivOp { get; } = Op('/', (a, b) => new DivExpr(a, b));
+    #endregion
+
+    // ArithmeticExpr ::= Term ([+|-] Term)*
+    public static Parser<IRollableExpr> ArithmeticExpr { get; } =
+        from leading in Parse.WhiteSpace.Many()
+        from term in Term
+        from rightTerms in RightArithmetic.Many()
+        select RightCurriedOperator.Chain(rightTerms)?.Invoke(term) ?? term;
+
+    // [+|-] Term
+    private static Parser<RightCurriedOperator> RightArithmetic { get; } =
+        from leading in Parse.WhiteSpace.Many()
+        from op in AddOp.Or(SubOp)
+        from term in Term
+        select new RightCurriedOperator(op, term);
+
+    // Factor ::= (ArithmeticExpr) | Value
+    public static Parser<IRollableExpr> Factor { get; } = Parens(ArithmeticExpr).Or(Value);
+
+    // Term ::= Factor ([*|/] Factor)*
+    public static Parser<IRollableExpr> Term { get; } =
+        from leading in Parse.WhiteSpace.Many()
+        from factor in Factor
+        from rightExprs in RightTerm.Many()
+        select RightCurriedOperator.Chain(rightExprs)?.Invoke(factor) ?? factor;
+
+    // [*|/] Term
+    private static Parser<RightCurriedOperator> RightTerm { get; } =
+        from leading in Parse.WhiteSpace.Many()
+        from op in MulOp.Or(DivOp)
+        from factor in Factor
+        select new RightCurriedOperator(op, factor);
+
+    // Expr ::= $ArithmeticExpr^
+    public static Parser<IRollableExpr> Expr { get; } =
+        (from leading in Parse.WhiteSpace.Many()
+         from expr in ArithmeticExpr
+         from trailing in Parse.WhiteSpace.Many()
+         select expr).End();
 }
 
-internal class RightOp
+// Helper class that holds an operator and the right operand. For example: ? + 3.
+// Useful when parsing the `Term` and `ArithmeticExpr` portions of the grammar.
+internal sealed class RightCurriedOperator
 {
-    private CurriedBinop _curried;
-    private IRollableExpr _rightSide;
-    public RightOp(CurriedBinop curried, IRollableExpr rightSide) => (_curried, _rightSide) = (curried, rightSide);
+    private readonly BinaryOperator _curried;
+    private readonly IRollableExpr _rightSide;
+    public RightCurriedOperator(BinaryOperator binOperator, IRollableExpr rightSide) =>
+        (_curried, _rightSide) = (binOperator, rightSide);
     public BinopExpr Invoke(IRollableExpr a) => _curried.Invoke(a, _rightSide);
-    public RightOp Chain(RightOp toChain) => new(_curried, toChain.Invoke(_rightSide));
-    public static RightOp? Chain(IEnumerable<RightOp> ops) => ops.Count() == 0 ? null :
-        ops.Aggregate((leftSide, acc) => leftSide.Chain(acc));
+    public RightCurriedOperator Chain(RightCurriedOperator toChain) =>
+        new(_curried, toChain.Invoke(_rightSide));
+    public static RightCurriedOperator? Chain(IEnumerable<RightCurriedOperator> ops) =>
+        ops.Count() == 0 ? null : ops.Aggregate((leftSide, acc) => leftSide.Chain(acc));
 }
 
-internal class LeftOp
-{
-    private CurriedBinop _curried;
-    private IRollableExpr _leftSide;
-    public LeftOp(IRollableExpr leftSide, CurriedBinop curried) => (_curried, _leftSide) = (curried, leftSide);
-    public BinopExpr Invoke(IRollableExpr b) => _curried.Invoke(_leftSide, b);
-    public LeftOp Chain(LeftOp toChain) => new LeftOp(Invoke(toChain._leftSide), toChain._curried);
-    public static LeftOp? Chain(IEnumerable<LeftOp> ops) => ops.Count() == 0 ? null : ops.Aggregate((left, acc) => left.Chain(acc));
-}
-
-internal class CurriedBinop
-{
-    private Func<IRollableExpr, IRollableExpr, BinopExpr> _curried;
-    public CurriedBinop(Func<IRollableExpr, IRollableExpr, BinopExpr> curried) => _curried = curried;
-    public BinopExpr Invoke(IRollableExpr a, IRollableExpr b) => _curried.Invoke(a, b);
-}
+// A function which takes two expressions and combines them into a BinopExpr
+internal delegate BinopExpr BinaryOperator(IRollableExpr a, IRollableExpr b);

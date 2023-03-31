@@ -58,7 +58,7 @@ RollResult simpleRollWithRandomness = "2d4".SimpleRoll(randomSource);
 
 // Roll(context) requires a context
 RollResult strengthRoll = "3d6 + Strength".Roll(context);
-RollResult strengthRollWithRandomnexx = "3d6 + Strength".Roll(context, randomSource);
+RollResult strengthRollWithRandomness = "3d6 + Strength".Roll(context, randomSource);
 ```
 
 ### Using RollResult as an int
@@ -87,6 +87,6 @@ DiceNotation dice = DiceNotation.Parse("2d4 + 1d6 + 2", randomSource);
 RollResult result = dice.Roll(null);
 
 IRandom riggedSource = ...;
-// Uses the riggredSource
+// Uses the riggedSource
 RollResult riggedResult = dice.Roll(null, riggedSource);
 ```

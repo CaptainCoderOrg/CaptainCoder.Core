@@ -16,14 +16,13 @@ Console.WriteLine($"Rolled a: {result.Value}");
 Console.WriteLine($"Detailed report: {result.Message}");
 ```
 
-## Using Variables
+## Supported Notation
 
-The dice notation parser supports addition, subtraction, integers, and variable
-identifiers. For example, the following rolls a 20 sided die subtracts 5 and
-adds a value `Strength` from the roll:
+The dice notation parser supports integers, dice groups, variable identifiers,
+addition, subtraction, multiplication, division, and parenthesis. For example:
 
 ```csharp
-DiceNotation strengthCheck = DiceNotation.Parse("1d20 - 5 + Strength");
+DiceNotation strengthCheck = DiceNotation.Parse("1d20 * (5 + Strength) - Health / 1d4");
 ```
 
 To perform a roll with variables, you must provide an instance of `IRollContext`
@@ -41,6 +40,26 @@ Console.WriteLine($"Detailed report: {result.Message}");
 ```
 
 ## Conveniences
+
+### String Extensions
+
+For convenience, strings are provided 3 extension methods: `ToDiceNotation`, `SimpleRoll` and `Roll(context)`.
+
+```csharp
+IRandom randomSource = ...;
+IRollContext context = ...;
+
+DiceNotation strength = "3d6 + Strength".ToDiceNotation();
+DiceNotation strengthWithRandomness = "3d6 + Strength".ToDiceNotation(randomSource);
+
+// SimpleRoll() can be used for any roll that does not use variables
+RollResult simpleRoll = "3d6 + 2".SimpleRoll();
+RollResult simpleRollWithRandomness = "2d4".SimpleRoll(randomSource);
+
+// Roll(context) requires a context
+RollResult strengthRoll = "3d6 + Strength".Roll(context);
+RollResult strengthRollWithRandomnexx = "3d6 + Strength".Roll(context, randomSource);
+```
 
 ### Using RollResult as an int
 

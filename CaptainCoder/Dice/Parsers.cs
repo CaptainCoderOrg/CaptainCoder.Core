@@ -5,8 +5,8 @@ namespace CaptainCoder.Dice;
 
 // Dice Notation Grammar:
 // Expr: $ArithmeticExpr^
-// ArithmeticExpr: Term ((+|-) Term)*
-// Term: Factor ((*|/) Factor)*
+// ArithmeticExpr: Term ([+|-] Term)*
+// Term: Factor ([*|/] Factor)*
 // Factor: (ArithmeticExpr) | Value
 // Value: DiceGroup | Int | Id
 internal static class Parsers

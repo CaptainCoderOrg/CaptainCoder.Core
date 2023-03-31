@@ -1,6 +1,8 @@
 using System;
+using System.Diagnostics;
 using System.Linq;
 using CaptainCoder.Core;
+using Sprache;
 namespace CaptainCoder.Dice;
 
 /// <summary>
@@ -46,7 +48,9 @@ public record DiceNotation
     {
         if (diceNotation == null) { throw new ArgumentNullException($"{nameof(diceNotation)} must be non-null."); }
         if (randomSource == null) { throw new ArgumentNullException($"{nameof(randomSource)} must be non-null."); }
-        IRollableExpr expr = DiceNotationParser.Parse(diceNotation);
-        return new DiceNotation(diceNotation, randomSource, expr);
+        IResult<IRollableExpr> parseResult = Parsers.Expression.TryParse(diceNotation);
+        Debug.WriteLine($"Remainder: {parseResult.Remainder}");
+        if (!parseResult.WasSuccessful) { throw new FormatException(parseResult.Message); }
+        return new DiceNotation(diceNotation, randomSource, parseResult.Value);
     }
 }

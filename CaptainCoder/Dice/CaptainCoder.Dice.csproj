@@ -4,6 +4,10 @@
     <ProjectReference Include="..\Core\CaptainCoder.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Sprache" Version="3.0.0-develop-00049" />
+  </ItemGroup>
+
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <TargetFramework>netstandard2.1</TargetFramework>

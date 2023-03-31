@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using CaptainCoder.Core;
+using Sprache;
 namespace CaptainCoder.Dice;
 
 /// <summary>
@@ -8,8 +9,8 @@ namespace CaptainCoder.Dice;
 /// </summary>
 public record DiceGroup
 {
-    private readonly IRandom _rng;
-    private DiceGroup(int count, int sides, IRandom randomSource)
+    private IRandom _rng;
+    internal DiceGroup(int count, int sides, IRandom randomSource)
     {
         if (count < 1) { throw new ArgumentException($"{nameof(count)} must be positive but was {count}."); }
         if (sides < 2) { throw new ArgumentException($"{nameof(sides)} must be 2 or greater but was {sides}."); }
@@ -17,6 +18,8 @@ public record DiceGroup
         Sides = sides;
         _rng = randomSource ?? throw new ArgumentNullException($"{nameof(randomSource)} must be non-null.");
     }
+
+    internal DiceGroup(int count, int sides) : this(count, sides, IRandom.Shared) { }
 
     /// <summary>
     /// The number of dice in this group
@@ -46,13 +49,12 @@ public record DiceGroup
     /// <summary>
     /// Rolls this dice group specifying the source of randomness.
     /// </summary>
-    public RollResult Roll(IRandom randomSource) 
+    public RollResult Roll(IRandom randomSource)
     {
         int RollDie() => randomSource.Next(1, Sides + 1);
-        var dice = Enumerable.Repeat(RollDie, Count).Select(roll => roll());
-        int[] rolls = dice.ToArray();
+        int[] rolls = Enumerable.Repeat(RollDie, Count).Select(roll => roll()).ToArray();
         int total = rolls.Sum();
-        string message = $"{Count}d{Sides} ({string.Join(" + ", dice)} = {total})";
+        string message = $"{Count}d{Sides} ({string.Join(" + ", rolls)} = {total})";
         return new RollResult(message, total);
     }
 
@@ -69,16 +71,15 @@ public record DiceGroup
     /// </summary>
     public static bool TryParse(string notation, IRandom randomSource, out DiceGroup result)
     {
-        if (notation == null) { throw new ArgumentNullException($"{nameof(notation)} must be non-null."); }
-        if (randomSource == null) { throw new ArgumentNullException($"{nameof(randomSource)} must be non-null."); }
+        IResult<DiceGroup> parseResult = Parsers.DiceGroup.TryParse(notation);
+        if(parseResult.WasSuccessful)
+        {
+            result = parseResult.Value;
+            result._rng = randomSource ?? throw new ArgumentNullException($"{nameof(notation)} must be non-null.");
+            return true;
+        }
         result = null!;
-        string[] split = notation.Split('d');
-        if (split.Length != 2) { return false; }
-        if (!int.TryParse(split[0], out int count)) { return false; }
-        if (!int.TryParse(split[1], out int sides)) { return false; }
-        if (count < 1) { return false; }
-        if (sides < 2) { return false; }
-        result = new DiceGroup(count, sides, randomSource);
-        return true;
+        return false;
     }
 }
+

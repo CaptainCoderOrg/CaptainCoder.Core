@@ -12,7 +12,7 @@ internal interface IRollableExpr
 
 internal record IntExpr(int Value) : IRollableExpr
 {
-    public RollResult Eval(IRollContext context, IRandom rng) => new (Value.ToString(), Value);
+    public RollResult Eval(IRollContext context, IRandom rng) => new(Value.ToString(), Value);
     public string Standardized => Value.ToString();
 }
 
@@ -24,7 +24,7 @@ internal record DiceGroupExpr(DiceGroup Group) : IRollableExpr
 
 internal record IdentifierExpr(string Id) : IRollableExpr
 {
-    public RollResult Eval(IRollContext context, IRandom rng) => new ($"{context.Lookup(Id)} ({Id})", context.Lookup(Id));
+    public RollResult Eval(IRollContext context, IRandom rng) => new($"{context.Lookup(Id)} ({Id})", context.Lookup(Id));
     public string Standardized => Id;
 }
 
@@ -38,5 +38,3 @@ internal record AddExpr(IRollableExpr LeftOperand, IRollableExpr RightOperand) :
 internal record SubExpr(IRollableExpr LeftOperand, IRollableExpr RightOperand) : BinopExpr(LeftOperand, RightOperand, (a, b) => a - b, '-');
 internal record MulExpr(IRollableExpr LeftOperand, IRollableExpr RightOperand) : BinopExpr(LeftOperand, RightOperand, (a, b) => a * b, '*');
 internal record DivExpr(IRollableExpr LeftOperand, IRollableExpr RightOperand) : BinopExpr(LeftOperand, RightOperand, (a, b) => a / b, '/');
-
-

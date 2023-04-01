@@ -38,17 +38,18 @@ internal static class Parsers
         from d in Parse.Char('d')
         from sides in Integer
         select new DiceGroup(count, sides);
+
     public static Parser<DiceGroupExpr> DiceGroupExpr { get; } =
         from leading in Parse.WhiteSpace.Many()
         from value in DiceGroup
         select new DiceGroupExpr(value);
-    
+
     // Int ::= [Digit]+
     public static Parser<IntExpr> IntExpr { get; } =
         from leading in Parse.WhiteSpace.Many()
         from value in Integer
         select new IntExpr(value);
-    
+
     // Id ::= [a-Z]+
     public static Parser<IdentifierExpr> IdentifierExpr { get; } =
         from leading in Parse.WhiteSpace.Many()
@@ -64,6 +65,7 @@ internal static class Parsers
         from leading in Parse.WhiteSpace.Many()
         from opChar in Parse.Char(ch)
         select binOp;
+
     public static Parser<BinaryOperator> AddOp { get; } = Op('+', (a, b) => new AddExpr(a, b));
     public static Parser<BinaryOperator> SubOp { get; } = Op('-', (a, b) => new SubExpr(a, b));
     public static Parser<BinaryOperator> MulOp { get; } = Op('*', (a, b) => new MulExpr(a, b));

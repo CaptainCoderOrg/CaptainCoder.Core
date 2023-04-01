@@ -12,21 +12,18 @@ public record DiceNotation
 {
     private readonly IRollableExpr _expr;
     private readonly IRandom _rng;
+    private DiceNotation(string notation, IRandom randomSource, IRollableExpr expr) => (Notation, _rng, _expr) = (notation, randomSource, expr);
 
     /// <summary>
     /// The notation used.
     /// </summary>
     public string Notation { get; }
-
-    private DiceNotation(string notation, IRandom randomSource, IRollableExpr expr) => (Notation, _rng, _expr) = (notation, randomSource, expr);
-
     /// <summary>
     /// Rolls any dice groups contained withing this <see cref="DiceNotation"/>
     /// and evaluates the result. An <see cref="IRollContext"/> must be provided
     /// if any variables exist within this notation.
     /// </summary>
     public RollResult Roll(IRollContext context) => _expr.Eval(context, _rng);
-
     /// <summary>
     /// Rolls any dice groups contained withing this <see cref="DiceNotation"/>
     /// using the specified source of randomness and evaluates the result. An
@@ -34,12 +31,10 @@ public record DiceNotation
     /// within this notation.
     /// </summary>
     public RollResult Roll(IRollContext context, IRandom randomSource) => _expr.Eval(context, randomSource);
-
     /// <summary>
     /// Parses the specified <paramref name="diceNotation"/>.
     /// </summary>
     public static DiceNotation Parse(string diceNotation) => Parse(diceNotation, IRandom.Shared);
-
     /// <summary>
     /// Parses the specified <paramref name="diceNotation"/> specifying the
     /// source of randomness to be used on rolls.

@@ -50,5 +50,5 @@ public record RollResult(string Message, int Value)
     /// <summary>
     /// For convenience, a RollResult may be used as an integer
     /// </summary>
-    public static implicit operator int(RollResult result) => result.Value; 
+    public static implicit operator int(RollResult result) => result.Value;
 }

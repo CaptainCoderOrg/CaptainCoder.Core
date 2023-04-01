@@ -41,7 +41,6 @@ public record DiceGroup
     /// The dice notation of this group.
     /// </summary>
     public string Notation => $"{Count}d{Sides}";
-
     /// <summary>
     /// Rolls this dice group.
     /// </summary>
@@ -57,13 +56,11 @@ public record DiceGroup
         string message = $"{Count}d{Sides} ({string.Join(" + ", rolls)} = {total})";
         return new RollResult(message, total);
     }
-
     /// <summary>
     /// Attempts to parse a dice group of the format "{count}d{sides}". The
     /// count must be positive and the sides must be greater than 1.
     /// </summary>
     public static bool TryParse(string notation, out DiceGroup result) => TryParse(notation, IRandom.Shared, out result);
-
     /// <summary>
     /// Attempts to parse a dice group of the format "{count}d{sides}" while
     /// specifying the source of randomness. The count must be positive and the
@@ -72,7 +69,7 @@ public record DiceGroup
     public static bool TryParse(string notation, IRandom randomSource, out DiceGroup result)
     {
         IResult<DiceGroup> parseResult = Parsers.DiceGroup.TryParse(notation);
-        if(parseResult.WasSuccessful)
+        if (parseResult.WasSuccessful)
         {
             result = parseResult.Value;
             result._rng = randomSource ?? throw new ArgumentNullException($"{nameof(notation)} must be non-null.");
@@ -82,4 +79,3 @@ public record DiceGroup
         return false;
     }
 }
-

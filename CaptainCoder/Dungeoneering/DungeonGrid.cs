@@ -17,7 +17,7 @@ public class DungeonGrid
 
     public void SetWall(Position position, Direction direction, Wall wall) => _walls[new WallPosition(position, direction)] = wall;
     public void DeleteWall(Position position, Direction direction) => _walls.Remove(new WallPosition(position, direction));
-    public void SetTile(Position position, Tile tile) => _tiles[position] = tile;    
+    public void SetTile(Position position, Tile tile) => _tiles[position] = tile;
     public void DeleteTile(Position position) => _tiles.Remove(position);
 
     /// <summary>
@@ -28,23 +28,41 @@ public class DungeonGrid
         Position.FindMinMax(_tiles.Keys, _walls.Keys.Select(wp => wp.Position));
     public Dictionary<Position, char> ToASCII()
     {
-        (Position topLeft, Position bottomRight) = TileBounds;
-        Console.WriteLine($"{topLeft} - {bottomRight}");
-        Position offset = topLeft;
-        (int asciiRows, int asciiCols) = (bottomRight - topLeft) + (1, 1);
-        Dictionary<Position, char> ascii = new ();
+        Dictionary<Position, char> ascii = new();
         foreach ((Position pos, ITile tile) in Tiles)
         {
-            ascii[(pos - offset).ToASCIIPosition()] = tile.Symbol;
+            ascii[(pos).ToASCIIPosition()] = tile.Symbol;
         }
         foreach ((WallPosition wPos, IWall wall) in Walls)
         {
-            WallPosition offWall = new WallPosition(wPos.Position - offset, wPos.Direction);
-            // Console.WriteLine($"Without offset: {wPos.Position}");
-            // Console.WriteLine($"With offset: {offWall.Position}");
-            ascii[offWall.ToASCIIPosition()] = wall.Symbol;
+            ascii[wPos.ToASCIIPosition()] = wall.Symbol;
+            AddNeighbors(wPos, ascii);
         }
         return ascii;
+    }
+
+    private void AddNeighbors(WallPosition wPos, Dictionary<Position, char> ascii)
+    {
+        if (wPos.Direction == Direction.North || wPos.Direction == Direction.South)
+        {
+            AddEastWestNeighbor(wPos, ascii);
+        }
+        else
+        {
+            AddNorthSouthNeighbor(wPos, ascii);
+        }
+    }
+
+    private void AddEastWestNeighbor(WallPosition wPos, Dictionary<Position, char> ascii)
+    {
+        ascii[wPos.ToASCIIPosition() + (0, 1)] = Wall.Solid.Symbol;
+        ascii[wPos.ToASCIIPosition() + (0, -1)] = Wall.Solid.Symbol;
+    }
+
+    private void AddNorthSouthNeighbor(WallPosition wPos, Dictionary<Position, char> ascii)
+    {
+        ascii[wPos.ToASCIIPosition() + (1, 0)] = Wall.Solid.Symbol;
+        ascii[wPos.ToASCIIPosition() + (-1, 0)] = Wall.Solid.Symbol;
     }
 }
 

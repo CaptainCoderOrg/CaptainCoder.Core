@@ -91,16 +91,20 @@ public static class DungeonExtensions
             _ => throw new NotImplementedException()
         };
 
-    public static string ToGridString(this char[,] grid)
+    public static string ToGridString(this Dictionary<Position, char> grid)
     {
         StringBuilder builder = new();
-        for (int row = 0; row < grid.GetLength(0); row++)
+        (Position min, Position max) = Position.FindMinMax(grid.Keys);
+        (int rows, int cols) = (max - min) + (1, 1);
+        // char[,] ascii = new char[rows, cols];
+        for (int row = 0; row < rows; row++)
         {
-            for (int col = 0; col < grid.GetLength(1); col++)
+            for (int col = 0; col < cols; col++)
             {
-                builder.Append(grid[row, col]);
+                Position p = (row, col) + min;
+                builder.Append(grid.GetValueOrDefault(p, ' '));
             }
-            builder.Append("\n");
+            builder.Append('\n');
         }
         return builder.ToString();
     }

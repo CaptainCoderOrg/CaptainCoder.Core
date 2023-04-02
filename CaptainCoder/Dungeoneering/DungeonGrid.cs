@@ -25,20 +25,24 @@ public class DungeonGrid
     /// Any position outside of these bounds is guaranteed to not be passable.
     /// </summary>
     public (Position topLeft, Position bottomRight) TileBounds =>
-        Position.FindMinMax(_tiles.Keys, _walls.Keys.Select(wp => wp.Position), _walls.Keys.Select(wp => wp.Opposite.Position));
+        Position.FindMinMax(_tiles.Keys, _walls.Keys.Select(wp => wp.Position));
     public Dictionary<Position, char> ToASCII()
     {
         (Position topLeft, Position bottomRight) = TileBounds;
+        Console.WriteLine($"{topLeft} - {bottomRight}");
         Position offset = topLeft;
         (int asciiRows, int asciiCols) = (bottomRight - topLeft) + (1, 1);
         Dictionary<Position, char> ascii = new ();
         foreach ((Position pos, ITile tile) in Tiles)
         {
-            ascii[pos.ToASCIIPosition() + offset] = tile.Symbol;
+            ascii[(pos - offset).ToASCIIPosition()] = tile.Symbol;
         }
         foreach ((WallPosition wPos, IWall wall) in Walls)
         {
-            ascii[wPos.ToASCIIPosition() + offset] = wall.Symbol;
+            WallPosition offWall = new WallPosition(wPos.Position - offset, wPos.Direction);
+            // Console.WriteLine($"Without offset: {wPos.Position}");
+            // Console.WriteLine($"With offset: {offWall.Position}");
+            ascii[offWall.ToASCIIPosition()] = wall.Symbol;
         }
         return ascii;
     }

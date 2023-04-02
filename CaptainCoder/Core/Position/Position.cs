@@ -56,13 +56,15 @@ public readonly record struct Position(int Row, int Col)
     /// <summary>
     /// Finds both the min and max position from all provided positions
     /// </summary>
-    public static (Position Min, Position Max) FindMinMax(IEnumerable<Position> positions)
+    public static (Position Min, Position Max) FindMinMax((Position, Position) seed, IEnumerable<Position> positions)
     {
-        (Position, Position) seed = ((int.MaxValue, int.MaxValue), (int.MinValue, int.MinValue));
         var step = ((Position min, Position max) acc, Position pos) => (Min(pos, acc.min), Max(pos, acc.max));
-        return positions.Aggregate(seed, step);
+        var minMax = positions.Aggregate(seed, step);
+        return minMax;
     }
 
+    public static (Position Min, Position Max) FindMinMax(IEnumerable<Position> positions) =>
+    FindMinMax(((int.MaxValue, int.MaxValue), (int.MinValue, int.MinValue)), positions);
     /// <summary>
     /// Finds both the min and max position from all provided positions
     /// </summary>
@@ -72,7 +74,7 @@ public readonly record struct Position(int Row, int Col)
         Position max = (int.MinValue, int.MinValue);
         foreach (IEnumerable<Position> positions in enumerables)
         {
-            (min, max) = FindMinMax(positions);
+            (min, max) = FindMinMax((min, max), positions);
         }
         return (min, max);
     }

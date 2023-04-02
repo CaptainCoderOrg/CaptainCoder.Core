@@ -10,6 +10,15 @@ public class DungeonGrid
         IEnumerable<(Direction, IWall)> walls = directions.Select(direction => (direction, WallAt(p, direction)));
         return new GridCell(TileAt(p), walls);
     }
+    public bool HasWallsAt(Position position)
+    {
+        foreach (Direction d in DirectionExtensions.All)
+        {
+            if (_walls.ContainsKey(new WallPosition(position, d))) { return true; }
+        }
+        return false;
+    }
+    public bool HasTileAt(Position position) => _tiles.ContainsKey(position);
     public IWall WallAt(Position position, Direction direction) => _walls.GetValueOrDefault(new WallPosition(position, direction), Wall.NoWall);
     public ITile TileAt(Position p) => _tiles.GetValueOrDefault(p, Tile.NoTile);
     public IEnumerable<(Position, ITile)> Tiles => _tiles.ToTuples();

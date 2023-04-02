@@ -5,6 +5,7 @@ public enum Direction
 
 public static class DirectionExtensions
 {
+    public static IEnumerable<Direction> All { get; } = new[] {Direction.North, Direction.East, Direction.South, Direction.West};
     public static Direction RotateClockwise(this Direction direction) => (Direction)(((int)direction + 1) % 4);
     public static Direction RotateCounterClockwise(this Direction direction) => (Direction)(((int)direction + 3) % 4);
     public static Position MovePosition(this Direction direction) => direction switch

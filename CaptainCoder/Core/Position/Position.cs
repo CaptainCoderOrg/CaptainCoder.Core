@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Linq;
+using System.Collections.Generic;
+
 namespace CaptainCoder.Core;
 
 /// <summary>
@@ -29,4 +32,48 @@ public readonly record struct Position(int Row, int Col)
     /// Calculates the simple difference in row and column values
     /// </summary>
     public static Position operator -(Position a, Position b) => new(a.Row - b.Row, a.Col - b.Col);
+
+    /// <summary>
+    /// Takes the smaller row and column of each position. For example: Position.Min((0, 5), (-1, 6)) => (-1, 5);
+    /// </summary>
+    public static Position Min(Position a, Position b) => new(Math.Min(a.Row, b.Row), Math.Min(a.Col, b.Col));
+
+    /// <summary>
+    /// Takes the larger row and column of each position. For example: Position.Max((0, 5), (-1, 6)) => (0, 6);
+    /// </summary>
+    public static Position Max(Position a, Position b) => new(Math.Max(a.Row, b.Row), Math.Max(a.Col, b.Col));
+
+    /// <summary>
+    /// Finds the smallest row and column of all position.
+    /// </summary>
+    public static Position Min(IEnumerable<Position> positions) => positions.Aggregate(Min);
+
+    /// <summary>
+    /// Finds the largest row and column of all positions
+    /// </summary>
+    public static Position Max(IEnumerable<Position> positions) => positions.Aggregate(Max);
+
+    /// <summary>
+    /// Finds both the min and max position from all provided positions
+    /// </summary>
+    public static (Position Min, Position Max) FindMinMax(IEnumerable<Position> positions)
+    {
+        (Position, Position) seed = ((int.MaxValue, int.MaxValue), (int.MinValue, int.MinValue));
+        var step = ((Position min, Position max) acc, Position pos) => (Min(pos, acc.min), Max(pos, acc.max));
+        return positions.Aggregate(seed, step);
+    }
+
+    /// <summary>
+    /// Finds both the min and max position from all provided positions
+    /// </summary>
+    public static (Position Min, Position Max) FindMinMax(params IEnumerable<Position>[] enumerables)
+    {
+        Position min = (int.MaxValue, int.MaxValue);
+        Position max = (int.MinValue, int.MinValue);
+        foreach (IEnumerable<Position> positions in enumerables)
+        {
+            (min, max) = FindMinMax(positions);
+        }
+        return (min, max);
+    }
 }

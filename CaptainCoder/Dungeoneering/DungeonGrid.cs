@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.IO;
+using System.Text;
 
 public class DungeonGrid
 {
@@ -25,6 +26,11 @@ public class DungeonGrid
     public IEnumerable<(WallPosition, IWall)> Walls => _walls.ToTuples();
 
     public void SetWall(Position position, Direction direction, Wall wall) => _walls[new WallPosition(position, direction)] = wall;
+    public void SetWall(WallPosition wallPosition, IWall wall)
+    {
+        if (wall == Wall.NoWall) { _walls.Remove(wallPosition); }
+        else { _walls[wallPosition] = wall; }
+    } 
     public void DeleteWall(Position position, Direction direction) => _walls.Remove(new WallPosition(position, direction));
     public void SetTile(Position position, Tile tile) => _tiles[position] = tile;
     public void DeleteTile(Position position) => _tiles.Remove(position);
@@ -73,6 +79,61 @@ public class DungeonGrid
         ascii[wPos.ToASCIIPosition() + (1, 0)] = Wall.Solid.Symbol;
         ascii[wPos.ToASCIIPosition() + (-1, 0)] = Wall.Solid.Symbol;
     }
+
+    public static bool TryLoad(string path, out DungeonGrid grid)
+    {
+        grid = new DungeonGrid();
+        try
+        {
+            string[] rows = File.ReadAllLines(path);
+            for (int row = 0; row < rows.Length; row++)
+            {
+                for (int col = 0; col < rows[row].Length; col++)
+                {
+                    char ch = rows[row][col];
+                    if (new Position(row, col).TryToWallPosition(out WallPosition wallPosition))
+                    {
+                        // Console.WriteLine($"({row}, {col}) => ({wallPosition.Position}, {wallPosition.Direction})");
+                        // Console.ReadLine();
+                        grid.SetWall(wallPosition, LoadWall(ch));
+                    }
+                    else if (new Position(row, col).TryToDungeonPosition(out Position dungeonPosition))
+                    {
+                        grid.SetTile(dungeonPosition, LoadTile(ch));
+                    }
+                }
+            }
+            return true;
+        }
+        catch (Exception e) {
+            Console.Error.WriteLine(e.Message);
+            Console.ReadLine();
+            return false;
+        }
+    }
+
+    private static IWall LoadWall(char ch)
+    {
+        IWall wall = ch switch
+        {
+            ' ' => Wall.NoWall,
+            '#' => Wall.Solid,
+            '+' => Wall.Door,
+            _ => throw new NotImplementedException()
+        };
+        return wall;
+    }
+
+    public static Tile LoadTile(char ch)
+    {
+        return ch switch
+        {
+            ' ' => Tile.NoTile,
+            '.' => Tile.Floor,
+            (> 'A') and (< 'z') => new Tile(ch, true),
+            _ => throw new NotImplementedException(),
+        };
+    }
 }
 
 
@@ -107,6 +168,39 @@ public static class DungeonExtensions
             builder.Append('\n');
         }
         return builder.ToString();
+    }
+
+    public static bool TryToWallPosition(this Position position, out WallPosition wallPosition)
+    {
+        wallPosition = default;
+        if (position.Row % 2 == 0)
+        {
+            // Invalid position
+            if (position.Col % 2 == 0) { return false; }
+
+            // Must be North / South Wall
+            Position newPos = (position.Row/2, position.Col/2);
+            wallPosition = new WallPosition(newPos, Direction.North);
+            return true;
+        }
+        else 
+        {
+            
+            // Must be East / West Wall
+            if (position.Col % 2 == 1) { return false; }
+            Position newPos = (position.Row/2, position.Col/2);
+            wallPosition = new WallPosition(newPos, Direction.West);
+            return true;
+        }
+        return false;
+    }
+
+    public static bool TryToDungeonPosition(this Position position, out Position dungeonPosition)
+    {
+        dungeonPosition = default;
+        if (position.Row % 2 == 0 || position.Col % 2 == 0) { return false; }
+        dungeonPosition = new Position(position.Row / 2, position.Col / 2);
+        return true;
     }
 
 }

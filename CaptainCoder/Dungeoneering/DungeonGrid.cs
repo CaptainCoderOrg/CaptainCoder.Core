@@ -107,6 +107,7 @@ public class DungeonGrid
         }
         catch (Exception e) {
             Console.Error.WriteLine(e.Message);
+            Console.Error.WriteLine(e.StackTrace);
             Console.ReadLine();
             return false;
         }
@@ -119,7 +120,8 @@ public class DungeonGrid
             ' ' => Wall.NoWall,
             '#' => Wall.Solid,
             '+' => Wall.Door,
-            _ => throw new NotImplementedException()
+            (< 'A') or (> 'z') => new Wall(ch),
+            _ => throw new NotImplementedException($"Could not load Wall '{ch}'"),
         };
         return wall;
     }
@@ -130,8 +132,9 @@ public class DungeonGrid
         {
             ' ' => Tile.NoTile,
             '.' => Tile.Floor,
-            (> 'A') and (< 'z') => new Tile(ch, true),
-            _ => throw new NotImplementedException(),
+            ',' => new Tile(',', true),
+            (>= 'A') and (<= 'z') => new Tile(ch, true),
+            _ => throw new NotImplementedException($"Could not load Tile '{ch}'"),
         };
     }
 }
@@ -192,7 +195,6 @@ public static class DungeonExtensions
             wallPosition = new WallPosition(newPos, Direction.West);
             return true;
         }
-        return false;
     }
 
     public static bool TryToDungeonPosition(this Position position, out Position dungeonPosition)

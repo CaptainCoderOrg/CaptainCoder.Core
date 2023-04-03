@@ -4,7 +4,7 @@ public readonly struct WallPosition
     public readonly Direction Direction;
     private readonly int _hash;
     private readonly (Position position, Direction direction) _opposite;
-
+    public bool IsNorthSouth => Direction == Direction.North || Direction == Direction.South;
     public WallPosition(Position position, Direction direction)
     {
         (Position, Direction) = (position, direction);

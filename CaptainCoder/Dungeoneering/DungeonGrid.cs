@@ -30,7 +30,7 @@ public class DungeonGrid
     {
         if (wall == Wall.NoWall) { _walls.Remove(wallPosition); }
         else { _walls[wallPosition] = wall; }
-    } 
+    }
     public void DeleteWall(Position position, Direction direction) => _walls.Remove(new WallPosition(position, direction));
     public void SetTile(Position position, Tile tile) => _tiles[position] = tile;
     public void DeleteTile(Position position) => _tiles.Remove(position);
@@ -80,32 +80,37 @@ public class DungeonGrid
         ascii[wPos.ToASCIIPosition() + (-1, 0)] = Wall.Solid.Symbol;
     }
 
-    public static bool TryLoad(string path, out DungeonGrid grid)
+    public static DungeonGrid Load(string[] rows)
     {
-        grid = new DungeonGrid();
-        try
+        DungeonGrid grid = new DungeonGrid();
+        for (int row = 0; row < rows.Length; row++)
         {
-            string[] rows = File.ReadAllLines(path);
-            for (int row = 0; row < rows.Length; row++)
+            for (int col = 0; col < rows[row].Length; col++)
             {
-                for (int col = 0; col < rows[row].Length; col++)
+                char ch = rows[row][col];
+                if (new Position(row, col).TryToWallPosition(out WallPosition wallPosition))
                 {
-                    char ch = rows[row][col];
-                    if (new Position(row, col).TryToWallPosition(out WallPosition wallPosition))
-                    {
-                        // Console.WriteLine($"({row}, {col}) => ({wallPosition.Position}, {wallPosition.Direction})");
-                        // Console.ReadLine();
-                        grid.SetWall(wallPosition, LoadWall(ch));
-                    }
-                    else if (new Position(row, col).TryToDungeonPosition(out Position dungeonPosition))
-                    {
-                        grid.SetTile(dungeonPosition, LoadTile(ch));
-                    }
+                    grid.SetWall(wallPosition, LoadWall(ch));
+                }
+                else if (new Position(row, col).TryToDungeonPosition(out Position dungeonPosition))
+                {
+                    grid.SetTile(dungeonPosition, LoadTile(ch, new Position(row + 1, col + 1)));
                 }
             }
+        }
+        return grid;
+    }
+
+    public static bool TryLoad(string path, out DungeonGrid grid)
+    {
+        grid = null!;
+        try
+        {
+            grid = Load(File.ReadAllLines(path));
             return true;
         }
-        catch (Exception e) {
+        catch (Exception e)
+        {
             Console.Error.WriteLine(e.Message);
             Console.Error.WriteLine(e.StackTrace);
             Console.ReadLine();
@@ -126,7 +131,7 @@ public class DungeonGrid
         return wall;
     }
 
-    public static Tile LoadTile(char ch)
+    public static Tile LoadTile(char ch, Position? positionData)
     {
         return ch switch
         {
@@ -134,7 +139,7 @@ public class DungeonGrid
             '.' => Tile.Floor,
             ',' => new Tile(',', true),
             (>= 'A') and (<= 'z') => new Tile(ch, true),
-            _ => throw new NotImplementedException($"Could not load Tile '{ch}'"),
+            _ => throw new NotImplementedException($"Could not load Tile '{ch}' {positionData}"),
         };
     }
 }
@@ -182,16 +187,16 @@ public static class DungeonExtensions
             if (position.Col % 2 == 0) { return false; }
 
             // Must be North / South Wall
-            Position newPos = (position.Row/2, position.Col/2);
+            Position newPos = (position.Row / 2, position.Col / 2);
             wallPosition = new WallPosition(newPos, Direction.North);
             return true;
         }
-        else 
+        else
         {
-            
+
             // Must be East / West Wall
             if (position.Col % 2 == 1) { return false; }
-            Position newPos = (position.Row/2, position.Col/2);
+            Position newPos = (position.Row / 2, position.Col / 2);
             wallPosition = new WallPosition(newPos, Direction.West);
             return true;
         }

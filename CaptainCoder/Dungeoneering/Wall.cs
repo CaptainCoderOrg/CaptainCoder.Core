@@ -1,7 +1,7 @@
 public interface IWall
 {
     public char Symbol { get; }
-    public bool IsPassable { get; }
+    public bool IsPassable { get; set; }
 }
 
 public class Wall : IWall
@@ -12,7 +12,7 @@ public class Wall : IWall
     public Wall(char symbol, bool isPassable) => (Symbol, IsPassable) = (symbol, isPassable);
     public Wall(char symbol) : this(symbol, false) {}
     public char Symbol { get; protected set; }
-    public bool IsPassable { get; protected set; }
+    public bool IsPassable { get; set; }
 }
 
 public class Door : Wall

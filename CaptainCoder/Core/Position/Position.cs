@@ -63,8 +63,12 @@ public readonly record struct Position(int Row, int Col)
         return minMax;
     }
 
+    /// <summary>
+    /// Iterates over all specified positions and returns a pair of Positions containing the minimum and maximum positions
+    /// </summary>
     public static (Position Min, Position Max) FindMinMax(IEnumerable<Position> positions) =>
     FindMinMax(((int.MaxValue, int.MaxValue), (int.MinValue, int.MinValue)), positions);
+
     /// <summary>
     /// Finds both the min and max position from all provided positions
     /// </summary>

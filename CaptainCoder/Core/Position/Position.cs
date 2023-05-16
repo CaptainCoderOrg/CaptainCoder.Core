@@ -24,6 +24,15 @@ public readonly record struct Position(int Row, int Col)
     public static implicit operator Position(MutablePosition mutablePosition) => mutablePosition.Freeze();
 
     /// <summary>
+    /// Scales both the row and column by the specified amount
+    /// </summary>
+    public static Position operator *(Position a, int b) => new(a.Row * b, a.Col * b);
+    /// <summary>
+    /// Scales both the row and column by the specified amount
+    /// </summary>
+    public static Position operator *(int a, Position b) => new(a * b.Row, a * b.Col);
+
+    /// <summary>
     /// Sums the row and column values together
     /// </summary>
     public static Position operator +(Position a, Position b) => new(a.Row + b.Row, a.Col + b.Col);

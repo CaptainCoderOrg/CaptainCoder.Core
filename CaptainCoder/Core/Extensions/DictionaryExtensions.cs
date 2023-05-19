@@ -7,7 +7,7 @@ public static class DictionaryExtensions
     /// <summary>
     /// Performs a deep comparison of all key value pairs in <paramref name="dict0"/> and <paramref name="dict1"/>.
     /// </summary>
-    public static bool KeyValuePairEquals<K,V>(this Dictionary<K,V> dict0, Dictionary<K,V> dict1)
+    public static bool KeyValuePairEquals<K,V>(this IReadOnlyDictionary<K,V> dict0, IReadOnlyDictionary<K,V> dict1)
     {
         if (dict0.Count != dict1.Count) { return false; }
         foreach((K key, V value) in dict0)
@@ -22,7 +22,7 @@ public static class DictionaryExtensions
     /// <summary>
     /// Generates an enumerable of tuples containing each key value pair in the dictionary
     /// </summary>
-    public static IEnumerable<(K, V)> ToTuples<K,V>(this Dictionary<K,V> dict)
+    public static IEnumerable<(K, V)> ToTuples<K,V>(this IReadOnlyDictionary<K,V> dict)
     {
         foreach ((K key, V value) in dict)
         {
